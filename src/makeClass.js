@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 function extend( definition ) {
 	const parent = this;
 	const parentProto = this.prototype;
