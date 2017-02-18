@@ -1,3 +1,7 @@
+/sample.js
+/src/*
+!/src/makeClass.js
+
 # Logs
 logs
 *.log
