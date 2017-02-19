@@ -1,8 +1,6 @@
 /sample.js
 /dist
-/src/*
-!/src/makeClass.ts
-!/src/index.ts
+/next
 
 # Logs
 logs

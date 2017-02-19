@@ -1,19 +1,54 @@
 import makeClass from '../src/makeClass';
 
 test( 'should have extend and implement', () => {
-	const Foo = makeClass( {
-		foo: 1,
-	}, {
-		bar: 2
-	} );
+	const Foo = makeClass();
 
-	expect( new Foo().foo ).toBe( 1 );
-	expect( Foo.bar ).toBe( 2 );
 	expect( Foo.extend ).toBeDefined();
 	expect( Foo.implement ).toBeDefined();
 } );
 
-test( 'extend two times', () => {
+test( 'static props', () => {
+	const Foo = makeClass( {}, {
+		foo: 1,
+	} );
+
+	expect( Foo.foo ).toBe( 1 );
+} );
+
+test( 'prototype props', () => {
+	const Foo = makeClass( {
+		bar: 2,
+	}, {} );
+
+	expect( ( new Foo() ).bar ).toBe( 2 );
+} );
+
+test( 'parent constructor invoked times', () => {
+	const Parent = jest.fn();
+	const Child = makeClass( {}, {}, Parent );
+	new Child();
+	expect( Parent ).toHaveBeenCalledTimes( 1 );
+	new Child();
+	expect( Parent ).toHaveBeenCalledTimes( 2 );
+} );
+
+test( 'extend protoProp inherits', () => {
+	function Parent() {}
+	Parent.prototype.bar = 1;
+
+	const Foo = makeClass( {
+		protoProp: 2,
+	}, {
+		staticProp: 3,
+	}, Parent );
+	const Foo2 = Foo.extend();
+	const Foo3 = Foo2.extend();
+
+	expect( ( new Foo3() ).bar ).toBe( 1 );
+	expect( ( new Foo3() ).protoProp ).toBe( 2 );
+} );
+
+test( 'extend several times', () => {
 	const Parent = jest.fn();
 	Parent.prototype.bar = 1;
 
@@ -22,8 +57,6 @@ test( 'extend two times', () => {
 	const Foo3 = Foo2.extend();
 
 	expect( new Foo3().bar ).toBe( 1 );
-	new Foo2();
-	expect( Parent ).toHaveBeenCalledTimes( 2 );
 	expect( Foo2.extend ).toBeDefined();
 	expect( Foo2.implement ).toBeDefined();
 } );

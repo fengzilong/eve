@@ -11,3 +11,7 @@ dependencies:
     - "~/.yarn-cache"
   override:
     - yarn install
+
+test:
+  post:
+    - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
