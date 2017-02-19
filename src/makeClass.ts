@@ -47,7 +47,7 @@ function extend( definition = {} ) {
 
 function createImplement( parentProto ): Function {
 	return function implement( definition ) {
-		const proto = this.constructor.prototype;
+		const proto = this.prototype;
 		// assign and supr
 		for ( const key in definition ) {
 			if ( hasOwn.call( definition, key ) ) {
