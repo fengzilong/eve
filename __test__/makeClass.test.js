@@ -60,3 +60,42 @@ test( 'extend several times', () => {
 	expect( Foo2.extend ).toBeDefined();
 	expect( Foo2.implement ).toBeDefined();
 } );
+
+test( 'implement', () => {
+	const Foo = makeClass();
+
+	Foo.implement( {
+		foo: 1
+	} );
+
+	expect( ( new Foo() ).foo ).toBe( 1 );
+} );
+
+test( 'implement override', () => {
+	const Foo = makeClass( {
+		foo: 1
+	} );
+
+	Foo.implement( {
+		foo: 2
+	} );
+
+	expect( ( new Foo() ).foo ).toBe( 2 );
+} );
+
+test( 'invoke supr method', () => {
+	const foo = jest.fn();
+	const Foo = makeClass( {
+		foo,
+	} );
+
+	const Foo2 = Foo.extend( {
+		foo() {
+			this.supr();
+		}
+	} );
+
+	( new Foo2() ).foo();
+
+	expect( foo ).toHaveBeenCalledTimes( 1 );
+} );
