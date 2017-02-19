@@ -2,6 +2,15 @@
 
 export default makeClass;
 
+// ----------------------
+
+interface RegExp {
+	test( string: string | Function ): boolean;
+}
+
+const suprRE = ( <RegExp>/xyz/ ).test( function () {'xyz'} ) ? /\bsupr\b/ : /.*/;
+const hasOwn = Object.prototype.hasOwnProperty;
+
 function makeClass(
 	protoProps = {},
 	staticProps = {},
@@ -10,7 +19,7 @@ function makeClass(
 	Object.assign( target, staticProps );
 	Object.assign( target.prototype, protoProps );
 	target.extend = extend;
-	target.implement = implement;
+	target.implement = createImplement( target.prototype );
 
 	return target;
 }
@@ -23,10 +32,12 @@ function extend( definition = {} ) {
 		parent.apply( this, arguments );
 	};
 	Child.prototype = createPrototype( parentProto );
+	// fix prototype constructor
+	Child.prototype.constructor = Child;
 
 	// add extend and implement
 	Child.extend = extend;
-	Child.implement = implement;
+	Child.implement = createImplement( parentProto );
 
 	// merge to prototype
 	Child.implement( definition );
@@ -34,9 +45,41 @@ function extend( definition = {} ) {
 	return Child;
 }
 
-function implement( definition ) {
-	const proto = this.constructor.prototype;
-	Object.assign( proto, definition );
+function createImplement( parentProto ): Function {
+	return function implement( definition ) {
+		const proto = this.constructor.prototype;
+		// assign and supr
+		for ( const key in definition ) {
+			if ( hasOwn.call( definition, key ) ) {
+
+				// function and contains supr invoke
+				let value = definition[ key ];
+				const parentProtoValue = parentProto[ key ];
+				if (
+					typeof value === 'function' &&
+					typeof parentProtoValue === 'function' &&
+					suprRE.test( value )
+				) {
+					value = wrapParentInvoke( value, parentProtoValue );
+				}
+
+				proto[ key ] = value;
+			}
+		}
+		return this;
+	};
+}
+
+function wrapParentInvoke( fn: Function, parentFn: Function ): Function {
+	return function () {
+		// save
+		const previous = this.supr;
+		this.supr = parentFn;
+		const rst = fn.apply( this, arguments );
+		// recover
+		this.supr = previous;
+		return rst;
+	};
 }
 
 function createPrototype( protoProps ) {
