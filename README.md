@@ -2,6 +2,7 @@
 
 [![build status][build-status-image]][build-status-url]
 [![coverage][coverage-image]][coverage-url]
+[![license][license-image]][license-url]
 
 ## License
 
@@ -12,3 +13,6 @@ MIT &copy; [fengzilong](https://github.com/fengzilong)
 
 [coverage-image]: https://img.shields.io/coveralls/fengzilong/pulse/master.svg?style=flat-square
 [coverage-url]: https://coveralls.io/github/fengzilong/pulse?branch=master
+
+[license-image]: https://img.shields.io/badge/license-MIT-000000.svg?style=flat-square
+[license-url]: LICENSE
