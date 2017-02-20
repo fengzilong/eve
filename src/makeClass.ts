@@ -6,7 +6,7 @@ interface RegExp {
 	test( string: string | Function ): boolean;
 }
 
-const suprRE = ( <RegExp>/xyz/ ).test( function () {'xyz'} ) ? /\bsupr\b/ : /.*/;
+const suprRE = ( /xyz/ as RegExp ).test( function () {'xyz'} ) ? /\bsupr\b/ : /.*/;
 const hasOwn = Object.prototype.hasOwnProperty;
 
 function makeClass(
