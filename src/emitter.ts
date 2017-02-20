@@ -3,6 +3,10 @@ export { mixin };
 
 // --------------------
 
+interface StubFunction {
+	stub?: Function;
+}
+
 function createMethods() {
 	const all = {};
 
@@ -17,7 +21,7 @@ function createMethods() {
 	}
 
 	return {
-		$on( type: string, fn: Function, options = {} ) {
+		$on( type: string, fn: Function, options: { once: boolean } = { once: false } ) {
 			let stub: Function | void;
 
 			if ( options.once ) {
@@ -25,7 +29,7 @@ function createMethods() {
 					fn.apply( this, arguments );
 					this.$off( type, fn );
 				};
-				fn.stub = stub;
+				( fn as StubFunction ).stub = stub;
 			}
 
 			list( type ).push( stub || fn );
@@ -33,7 +37,7 @@ function createMethods() {
 			return this;
 		},
 
-		$off( type: string, fn?: Function ) {
+		$off( type: string, fn?: StubFunction ) {
 			const compare = fn.stub || fn;
 			const array = list( type );
 
@@ -66,6 +70,10 @@ function createMethods() {
 function Emitter() {}
 Object.assign( Emitter.prototype, createMethods() );
 
-function mixin( target = {} ): void {
-	Object.assign( target, createMethods() );
+function mixin( target: any = {} ): void {
+	if ( typeof target === 'function' ) {
+		Object.assign( target.prototype, createMethods() );
+	} else {
+		Object.assign( target, createMethods() );
+	}
 }
