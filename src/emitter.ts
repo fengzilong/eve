@@ -1,6 +1,6 @@
 export { Emitter, mixin };
 
-// --------------------
+// ----------------------
 
 interface StubFunction extends Function {
 	once?: boolean;
@@ -73,21 +73,13 @@ function createMethods() {
 		$emit( type: string, params: any ) {
 			const array = list( type );
 
-			let hasOnce = false;
 			const filtered = array.filter( ( fn, i ) => {
 				// use this as context
 				fn.call( this, params );
-
-				if ( fn.once ) {
-					hasOnce = true;
-				}
-
 				return !fn.once;
 			} );
 
-			if ( hasOnce ) {
-				list( type, filtered );
-			}
+			list( type, filtered );
 
 			return this;
 		},
