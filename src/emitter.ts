@@ -1,51 +1,65 @@
-export default Emitter;
-export { mixin };
+export { Emitter, mixin };
 
 // --------------------
 
-interface StubFunction {
-	stub?: Function;
+interface StubFunction extends Function {
+	once?: boolean;
+	origin?: Function;
 }
 
 function createMethods() {
 	const all = {};
 
 	// list from all
-	function list( type: string ): Function[] {
+	function list( type: string, array?: StubFunction[] ): StubFunction[] {
 		if ( typeof all[ type ] === 'undefined' ) {
 			all[ type ] = [];
+		}
+
+		if ( typeof array === 'undefined' ) {
 			return all[ type ];
 		}
 
+		all[ type ] = array;
 		return all[ type ];
 	}
 
 	return {
 		$on( type: string, fn: Function, options: { once: boolean } = { once: false } ) {
-			let stub: Function | void;
+			const array = list( type );
+
+			let stub: StubFunction | void;
 
 			if ( options.once ) {
 				stub = () => {
 					fn.apply( this, arguments );
-					this.$off( type, fn );
 				};
-				( fn as StubFunction ).stub = stub;
+				stub.origin = fn;
+				// mark stub function as once
+				stub.once = true;
 			}
 
-			list( type ).push( stub || fn );
+			array.push( stub || fn );
 
 			return this;
 		},
 
-		$off( type: string, fn?: StubFunction ) {
-			const compare = fn.stub || fn;
+		$off( type: string, fn?: Function ) {
 			const array = list( type );
 
-			array.forEach( ( handler, i ) => {
-				if ( compare === handler ) {
-					array.splice( i, 1 );
-				}
-			} );
+			let filtered = [];
+
+			if ( typeof fn === 'function' ) {
+				filtered = array.filter( ( handler, i ) => {
+					if ( fn === handler || handler.origin === fn ) {
+						return false;
+					}
+
+					return true;
+				} );
+			}
+
+			list( type, filtered );
 
 			return this;
 		},
@@ -57,10 +71,23 @@ function createMethods() {
 		},
 
 		$emit( type: string, params: any ) {
-			list( type ).forEach( fn => {
-				// use context of mixined target
+			const array = list( type );
+
+			let hasOnce = false;
+			const filtered = array.filter( ( fn, i ) => {
+				// use this as context
 				fn.call( this, params );
+
+				if ( fn.once ) {
+					hasOnce = true;
+				}
+
+				return !fn.once;
 			} );
+
+			if ( hasOnce ) {
+				list( type, filtered );
+			}
 
 			return this;
 		},
