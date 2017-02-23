@@ -1,4 +1,4 @@
 export default {
-	digest_max_times: 20,
+	max_digest_times: 20,
 	delimiters: [ '{', '}' ],
 };
