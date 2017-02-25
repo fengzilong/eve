@@ -1,6 +1,10 @@
+export default uid;
+
+// ----------------
+
 const prefix = '(>ε<)';
 let id = 0;
 
-export default function () {
+function uid() {
 	return `${ prefix }_${ id++ }`;
 };
