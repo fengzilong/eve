@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest --no-cache",
+    "test": "npm run lint && jest --no-cache",
     "test:watch": "jest --watch",
     "dev": "webpack -w",
     "precommit": "npm test",
