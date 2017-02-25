@@ -6,13 +6,13 @@ interface RegExp {
 	test( string: string | Function ): boolean;
 }
 
-const suprRE = ( /xyz/ as RegExp ).test( function () {'xyz'} ) ? /\bsupr\b/ : /.*/;
+const suprRE = ( /xyz/ as RegExp ).test( function () { 'xyz'; } ) ? /\bsupr\b/ : /.*/;
 const hasOwn = Object.prototype.hasOwnProperty;
 
 function makeClass(
 	protoProps = {},
 	staticProps = {},
-	target: any = () => {}
+	target: any = () => {} // tslint:disable-line
 ) {
 	Object.assign( target, staticProps );
 	Object.assign( target.prototype, protoProps );

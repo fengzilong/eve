@@ -86,7 +86,7 @@ function createMethods() {
 	};
 }
 
-function Emitter() {}
+function Emitter() {} // tslint:disable-line
 Object.assign( Emitter.prototype, createMethods() );
 
 function mixin( target: any = {} ): void {

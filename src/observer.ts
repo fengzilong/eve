@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 export default Observer;
 
 // ---------------------

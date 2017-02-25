@@ -6,7 +6,8 @@
     "test": "jest --no-cache",
     "test:watch": "jest --watch",
     "dev": "webpack -w",
-    "precommit": "npm test"
+    "precommit": "npm test",
+    "lint": "tslint src/**/*.ts"
   },
   "jest": {
     "collectCoverage": true,
@@ -37,6 +38,7 @@
     "husky": "^0.13.1",
     "jest-cli": "^18.1.0",
     "ts-loader": "^2.0.0",
+    "tslint": "^4.4.2",
     "typescript": "^2.1.6",
     "typescript-babel-jest": "^1.0.1",
     "webpack": "^1.14.0"

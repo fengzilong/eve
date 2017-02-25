@@ -1,0 +1,14 @@
+{
+	"extends": "tslint:recommended",
+	"rules": {
+		"indent": [ true, "tabs" ],
+		"quotemark": [ true, "single" ],
+		"interface-name": [ true, "never-prefix" ],
+		"no-bitwise": false,
+		"no-empty": false,
+		"only-arrow-functions": false,
+		"ordered-imports": false,
+		"object-literal-sort-keys": false,
+		"variable-name": false
+	}
+}

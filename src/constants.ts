@@ -16,4 +16,7 @@ export const SVG_TAGS: string[] = ( ''
 	// font
 	+ 'font,font-face,glyph,missing-glyph' ).split( ',' );
 
-export const SELF_CLOSE_TAGS: string[] = 'area,base,br,col,embed,hr,img,input,keygen,link,menuitem,meta,param,source,track,wbr'.split( ',' );
+export const SELF_CLOSE_TAGS: string[] = ''
+	+ 'area,base,br,col,embed,hr,'
+	+ 'img,input,keygen,link,menuitem,'
+	+ 'meta,param,source,track,wbr'.split( ',' );
