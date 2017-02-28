@@ -86,9 +86,6 @@ function createMethods() {
 	};
 }
 
-function Emitter() {} // tslint:disable-line
-Object.assign( Emitter.prototype, createMethods() );
-
 function mixin( target: any = {} ): void {
 	if ( typeof target === 'function' ) {
 		Object.assign( target.prototype, createMethods() );
@@ -96,3 +93,6 @@ function mixin( target: any = {} ): void {
 		Object.assign( target, createMethods() );
 	}
 }
+
+function Emitter() {} // tslint:disable-line
+mixin( Emitter );
