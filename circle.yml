@@ -1,17 +1,13 @@
 machine:
-  pre:
-    - mkdir ~/.yarn-cache
   node:
     version: 7
 
 dependencies:
-  pre:
-    - curl -o- -L https://yarnpkg.com/install.sh | bash
   cache_directories:
-    - "~/.yarn-cache"
+    - ~/.yarn-cache
   override:
-    - yarn install
+    - yarn
 
 test:
   post:
-    - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+    - bash <(curl -s https://codecov.io/bash)
