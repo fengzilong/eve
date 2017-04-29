@@ -2,7 +2,7 @@ export { Emitter, mixin };
 
 // ----------------------
 
-interface StubFunction extends Function {
+interface IStubFunction extends Function {
 	once?: boolean;
 	origin?: Function;
 }
@@ -11,7 +11,7 @@ function createMethods() {
 	const all = {};
 
 	// list from all
-	function list( type: string, array?: StubFunction[] ): StubFunction[] {
+	function list( type: string, array?: IStubFunction[] ): IStubFunction[] {
 		if ( typeof all[ type ] === 'undefined' ) {
 			all[ type ] = [];
 		}
@@ -28,7 +28,7 @@ function createMethods() {
 		$on( type: string, fn: Function, options: { once: boolean } = { once: false } ) {
 			const array = list( type );
 
-			let stub: StubFunction | void;
+			let stub: IStubFunction | void;
 
 			if ( options.once ) {
 				stub = () => {

@@ -1,19 +1,23 @@
 import Disposable from './disposable';
 
+interface IDisposable {
+	dispose: Function;
+};
+
 export default class Disposables {
-	private _stash: Disposable[];
+	private _stash: IDisposable[];
 
 	constructor() {
 		this._stash = [];
 	}
 
-	public add( target ) {
+	public add( target: IDisposable ) {
 		if ( this._canDispose( target ) ) {
 			this._stash.push( target );
 		}
 	}
 
-	public remove( target ) {
+	public remove( target: IDisposable ) {
 		if ( this._canDispose( target ) ) {
 			this._stash = this._stash
 				.filter( ( disposable ) => disposable !== target );

@@ -3,7 +3,7 @@
 	"rules": {
 		"indent": [ true, "tabs" ],
 		"quotemark": [ true, "single" ],
-		"interface-name": [ true, "never-prefix" ],
+		"interface-name": [ true, "always-prefix" ],
 		"no-bitwise": false,
 		"no-empty": false,
 		"only-arrow-functions": false,

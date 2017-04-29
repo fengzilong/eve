@@ -2,11 +2,11 @@ export default makeClass;
 
 // ----------------------
 
-interface RegExp {
+interface IRegExp {
 	test( string: string | Function ): boolean;
 }
 
-const suprRE = ( /xyz/ as RegExp ).test( function () { 'xyz'; } ) ? /\bsupr\b/ : /.*/;
+const suprRE = ( /xyz/ as IRegExp ).test( function () { 'xyz'; } ) ? /\bsupr\b/ : /.*/;
 const hasOwn = Object.prototype.hasOwnProperty;
 
 function makeClass(
