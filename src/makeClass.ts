@@ -58,7 +58,7 @@ function createImplement( parentProto ): Function {
 					typeof parentProtoValue === 'function' &&
 					suprRE.test( value )
 				) {
-					value = wrapParentInvoke( value, parentProtoValue );
+					value = wrapSupr( value, parentProtoValue );
 				}
 
 				proto[ key ] = value;
@@ -68,7 +68,7 @@ function createImplement( parentProto ): Function {
 	};
 }
 
-function wrapParentInvoke( fn: Function, parentFn: Function ): Function {
+function wrapSupr( fn: Function, parentFn: Function ): Function {
 	return function () {
 		// save
 		const previous = this.supr;
