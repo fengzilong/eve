@@ -1,4 +1,4 @@
-import { isFunction, isSVGTag, isSelfCloseTag } from '../src/shared/is';
+import { isFunction, isSVGTag, isSelfCloseTag } from '../is';
 
 test( 'isFunction', () => {
 	function Foo() {};

@@ -1,4 +1,4 @@
-import uid from '../src/shared/uid';
+import uid from '../uid';
 
 test( 'uid works', () => {
 	const uid1 = uid();
