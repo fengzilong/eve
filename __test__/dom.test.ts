@@ -1,4 +1,4 @@
-import { createElement, removeElement, addEvent, removeEvent } from '../src/dom';
+import { createElement, removeElement, addEvent, removeEvent } from '../src/platform/web/dom';
 
 test( 'createElement works', () => {
 	const el = createElement( 'path' );

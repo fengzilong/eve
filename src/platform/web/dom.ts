@@ -1,5 +1,5 @@
-import { isSVGTag } from './is';
-import { SVG_NAMESPACE } from './constants';
+import { isSVGTag } from '../../shared/is';
+import { SVG_NAMESPACE } from '../../shared/constants';
 
 export {
 	createElement,

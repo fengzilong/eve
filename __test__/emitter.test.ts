@@ -1,4 +1,4 @@
-import { Emitter, mixin } from '../src/emitter';
+import { Emitter, mixin } from '../src/shared/emitter';
 
 test( 'Emitter $on and $emit', () => {
 	const emitter = new Emitter();

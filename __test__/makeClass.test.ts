@@ -1,4 +1,4 @@
-import makeClass from '../src/makeClass';
+import makeClass from '../src/core/makeClass';
 
 test( 'should have extend and implement', () => {
 	const Foo = makeClass();

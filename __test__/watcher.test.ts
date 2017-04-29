@@ -1,4 +1,4 @@
-import { Watcher, mixin } from '../src/watcher';
+import { Watcher, mixin } from '../src/core/watcher';
 
 test( 'should have $watch, $unwatch, $update', () => {
 	const ob = new Watcher();
