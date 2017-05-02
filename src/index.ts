@@ -1,6 +1,5 @@
 import makeClass from './core/makeClass';
 import { Watcher } from './core/watcher';
+import Seed from './core/seed';
 
-const Seed = makeClass();
-
-export default Seed;
+export default makeClass( {}, {}, Seed );
