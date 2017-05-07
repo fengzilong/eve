@@ -11,10 +11,25 @@
 
 		<script type="text/javascript" src="../dist/pulse.js"></script>
 		<script type="text/javascript">
-			console.log( 'Pulse', Pulse );
-
 			const Button = Pulse.extend( {
+				template() {
+					return `
+						{#if v}
+						{/if}
+					`;
+				},
+				methods: {
 
+				},
+				onCreated() {
+
+				},
+				onMounted() {
+
+				},
+				onDisposed() {
+
+				},
 			} );
 
 			const button = new Button();
