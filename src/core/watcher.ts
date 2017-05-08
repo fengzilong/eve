@@ -1,6 +1,6 @@
 /* tslint:disable */
 
-import uid from '../shared/uid';
+import uid from '../utils/uid';
 
 export { Watcher, mixin };
 

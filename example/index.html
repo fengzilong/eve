@@ -12,14 +12,23 @@
 		<script type="text/javascript" src="../dist/pulse.js"></script>
 		<script type="text/javascript">
 			const Button = Pulse.extend( {
-				template() {
-					return `
-						{#if v}
-						{/if}
-					`;
+				data() {
+
+				},
+				computed: {
+
 				},
 				methods: {
 
+				},
+				template() {
+					return `
+						{#if v}
+							<slot></slot>
+
+							<div slot="a"></div>
+						{/if}
+					`;
 				},
 				onCreated() {
 
