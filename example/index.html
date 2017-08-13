@@ -12,9 +12,6 @@
 		<script type="text/javascript" src="../dist/pulse.js"></script>
 		<script type="text/javascript">
 			const Button = Pulse.extend( {
-				data() {
-
-				},
 				computed: {
 
 				},
@@ -24,14 +21,42 @@
 				template() {
 					return `
 						{#if v}
-							<slot></slot>
+							<slot name="title"></slot>
 
-							<div slot="a"></div>
+							{ content | filter1 | filter2 }
+							<div>{ content + 1 }</div>
+							<div @click={ onClick($e) }></div>
 						{/if}
+
+						<div
+							a={ { a: b } }
+							c={ ds && c + 1 }
+							x={ true }
+						></div>
 					`;
 				},
-				onCreated() {
 
+				// a | b: c, d | e
+				// a ? b : c
+				// + - * / %
+				// && ||
+				// a()
+				// a.b
+				// a[ b ]
+				// ( a )
+				// < > <= >= === !== == !=
+
+				// $$render() {};
+				// $$paths: [],
+				// -> watchers
+
+				data() {
+					this._data = {a:9}
+				},
+
+				onCreated() {
+					this._a = 123;
+					console.log( 'child onCreated' );
 				},
 				onMounted() {
 
@@ -41,7 +66,17 @@
 				},
 			} );
 
-			const button = new Button();
+			console.dir( Button );
+
+			const ButtonX = Button.extend( {
+				onCreated() {
+					console.log( 'self onCreated' );
+				}
+			} );
+
+			console.log( 'ButtonX', ButtonX );
+
+			const button = new ButtonX();
 
 			console.log( button );
 

@@ -1,39 +1,33 @@
-export default Seed;
+abstract class Seed {
+	public static component = () => {};
+	public static directive = () => {};
+	public static filter = () => {};
 
-// ----------------------
+	private _data: Object;
 
-function Seed() {
+	constructor() {
+		if ( typeof this.data === 'function' ) {
+			this.data();
+		}
+	}
 
+	public abstract onCreated(): void;
+	public abstract onMounted(): void;
+	public abstract onDisposed(): void;
+	public abstract data(): void;
+
+	public $mount() {
+		this.onCreated();
+		this.onMounted();
+	}
+
+	public $unmount() {
+		this.onDisposed();
+	}
+
+	public $update() {
+
+	}
 }
 
-Seed.prototype = {
-	constructor: Seed,
-
-	$mount() {
-
-	},
-
-	$unmount() {
-
-	},
-
-	$update() {
-
-	},
-
-	$watch() {
-
-	},
-
-	$unwatch() {
-
-	},
-
-	$component() {
-
-	},
-
-	$filter() {
-
-	},
-};
+export default Seed;

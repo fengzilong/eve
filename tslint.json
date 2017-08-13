@@ -9,6 +9,7 @@
 		"only-arrow-functions": false,
 		"ordered-imports": false,
 		"object-literal-sort-keys": false,
-		"variable-name": false
+		"variable-name": false,
+		"no-use-before-declare": false
 	}
 }
