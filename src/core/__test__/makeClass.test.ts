@@ -9,10 +9,20 @@ test( 'should have extend and implement', () => {
 
 test( 'static props', () => {
 	const Foo = makeClass( {}, {
-		foo: 1,
+		bar: 1,
 	} )
 
-	expect( Foo.foo ).toBe( 1 )
+	expect( Foo.bar ).toBe( 1 )
+} )
+
+test( 'inherits static props', () => {
+	const Foo = makeClass( {}, {
+		bar: 1,
+	} )
+
+	const Foo2 = Foo.extend()
+
+	expect( Foo2.bar ).toBe( 1 )
 } )
 
 test( 'prototype props', () => {

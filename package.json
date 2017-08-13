@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "npm run lint && jest --no-cache",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --no-cache --watchAll",
     "dev": "webpack -w",
     "precommit": "npm test",
     "lint": "tslint src/**/*.ts"

@@ -1,18 +1,18 @@
 import makeClass from './core/makeClass'
 import { Watcher } from './core/watcher'
+import { mixin as mixinEmitter } from './utils/emitter'
 
 export default makeClass(
-	// prototype
+	// abstract + public
 	{
-		// abstract
 		data() {},
 		onCreated() {},
 		onMounted() {},
 		onDisposed() {},
 
-		// public
 		$mount() {
 			this.onMounted()
+			// this._disposable.add( addEvent( 'click', a ) )
 		},
 
 		$unmount() {
@@ -20,7 +20,7 @@ export default makeClass(
 		},
 
 		$update() {
-
+			this._digest()
 		},
 	},
 
@@ -43,12 +43,7 @@ export default makeClass(
 		},
 	},
 
-	// constructor
-	function Seed() {
-		if ( typeof this.data === 'function' ) {
-			this.data()
-		}
-
-		this.onCreated()
+	function () {
+		mixinEmitter( this )
 	}
 )

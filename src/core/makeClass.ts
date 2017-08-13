@@ -2,13 +2,6 @@ export default makeClass
 
 // ----------------------
 
-interface IRegExp {
-	test( string: string | Function ): boolean
-}
-
-const suprRE = ( /xyz/ as IRegExp ).test( function () { 'xyz' } ) ? /\bsupr\b/ : /.*/
-const hasOwn = Object.prototype.hasOwnProperty
-
 function makeClass(
 	protoProps = {},
 	staticProps = {},
@@ -16,31 +9,42 @@ function makeClass(
 ) {
 	Object.assign( target, staticProps )
 	Object.assign( target.prototype, protoProps )
-	target.extend = extend
+	target.extend = createExtend( staticProps )
 	target.implement = createImplement( target.prototype )
 
 	return target
 }
 
-function extend( definition = {} ) {
-	const parent = this
-	const parentProto = this.prototype
+interface IRegExp {
+	test( string: string | Function ): boolean
+}
 
-	const Child: any = function () {
-		parent.apply( this, arguments )
+const suprRE = ( /xyz/ as IRegExp ).test( function () { 'xyz' } ) ? /\bsupr\b/ : /.*/
+const hasOwn = Object.prototype.hasOwnProperty
+
+function createExtend( staticProps: Object ): Function {
+	return function extend( definition = {} ) {
+		const parent = this
+		const parentProto = this.prototype
+
+		const Child: any = function () {
+			parent.apply( this, arguments )
+		}
+		Child.prototype = Object.create( parentProto )
+		// fix prototype constructor
+		Child.prototype.constructor = Child
+
+		// add extend and implement
+		Child.extend = extend
+		Child.implement = createImplement( parentProto )
+
+		// inherits static methods
+		Object.assign( Child, staticProps )
+		// merge to prototype
+		Child.implement( definition )
+
+		return Child
 	}
-	Child.prototype = createPrototype( parentProto )
-	// fix prototype constructor
-	Child.prototype.constructor = Child
-
-	// add extend and implement
-	Child.extend = extend
-	Child.implement = createImplement( parentProto )
-
-	// merge to prototype
-	Child.implement( definition )
-
-	return Child
 }
 
 function createImplement( parentProto ): Function {
@@ -78,10 +82,4 @@ function wrapSupr( fn: Function, parentFn: Function ): Function {
 		this.supr = previous
 		return rst
 	}
-}
-
-function createPrototype( protoProps ) {
-	function Proxy() {}
-	Proxy.prototype = protoProps
-	return new Proxy()
 }
