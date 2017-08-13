@@ -1,41 +1,41 @@
-import { isSVGTag } from '../utils/is';
-import { SVG_NAMESPACE } from '../utils/constants';
+import { isSVGTag } from '../utils/is'
+import { SVG_NAMESPACE } from '../utils/constants'
 
 export {
 	createElement,
 	removeElement,
 	addEvent,
 	removeEvent,
-};
+}
 
 // ----------------
 
 function createElement( tagName: string ) {
 	if ( isSVGTag( tagName ) ) {
-		return document.createElementNS( SVG_NAMESPACE, tagName );
+		return document.createElementNS( SVG_NAMESPACE, tagName )
 	}
 
-	return document.createElement( tagName );
+	return document.createElement( tagName )
 }
 
 function removeElement( element ): void {
 	if ( element && element.parentNode ) {
-		element.parentNode.removeChild( element );
+		element.parentNode.removeChild( element )
 	}
 }
 
 function addEvent( element, eventName: string, listener: Function ): void {
 	if ( element.addEventListener ) {
-		element.addEventListener( eventName, listener, false );
+		element.addEventListener( eventName, listener, false )
 	} else {
-		element.attachEvent( `on${ eventName }`, listener );
+		element.attachEvent( `on${ eventName }`, listener )
 	}
 }
 
 function removeEvent( element, eventName: string, listener: Function ): void {
 	if ( element.addEventListener ) {
-		element.removeEventListener( eventName, listener, false );
+		element.removeEventListener( eventName, listener, false )
 	} else {
-		element.detachEvent( `on${ eventName }`, listener );
+		element.detachEvent( `on${ eventName }`, listener )
 	}
 }

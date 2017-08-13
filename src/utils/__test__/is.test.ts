@@ -1,23 +1,23 @@
-import { isFunction, isSVGTag, isSelfCloseTag } from '../is';
+import { isFunction, isSVGTag, isSelfCloseTag } from '../is'
 
 test( 'isFunction', () => {
-	function Foo() {};
+	function Foo() {}
 
-	expect( isFunction( Foo ) ).toBe( true );
-	expect( isFunction( {} ) ).toBe( false );
-	expect( isFunction( '123' ) ).toBe( false );
-	expect( isFunction( 123 ) ).toBe( false );
-	expect( isFunction( null ) ).toBe( false );
-	expect( isFunction( void 0 ) ).toBe( false );
-} );
+	expect( isFunction( Foo ) ).toBe( true )
+	expect( isFunction( {} ) ).toBe( false )
+	expect( isFunction( '123' ) ).toBe( false )
+	expect( isFunction( 123 ) ).toBe( false )
+	expect( isFunction( null ) ).toBe( false )
+	expect( isFunction( void 0 ) ).toBe( false )
+} )
 
 test( 'isSVGTag', () => {
-	expect( isSVGTag( 'svg' ) ).toBe( true );
-	expect( isSVGTag( 'img' ) ).toBe( false );
-	expect( isSVGTag( 'div' ) ).toBe( false );
-} );
+	expect( isSVGTag( 'svg' ) ).toBe( true )
+	expect( isSVGTag( 'img' ) ).toBe( false )
+	expect( isSVGTag( 'div' ) ).toBe( false )
+} )
 
 test( 'isSelfCloseTag', () => {
-	expect( isSelfCloseTag( 'img' ) ).toBe( true );
-	expect( isSelfCloseTag( 'span' ) ).toBe( false );
-} );
+	expect( isSelfCloseTag( 'img' ) ).toBe( true )
+	expect( isSelfCloseTag( 'span' ) ).toBe( false )
+} )

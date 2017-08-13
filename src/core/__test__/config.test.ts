@@ -1,5 +1,5 @@
-import config from '../config';
+import config from '../config'
 
 test( 'config', () => {
-	expect( config ).toBeDefined(  );
-} );
+	expect( config ).toBeDefined(  )
+} )

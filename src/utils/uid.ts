@@ -1,10 +1,10 @@
-export default uid;
+export default uid
 
 // ----------------
 
-const prefix = '(>ε<)';
-let id = 0;
+const prefix = '(>ε<)'
+let id = 0
 
 function uid() {
-	return `${ prefix }_${ id++ }`;
-};
+	return `${ prefix }_${ id++ }`
+}

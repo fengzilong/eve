@@ -1,9 +1,9 @@
-import { Watcher, mixin } from '../watcher';
+import { Watcher, mixin } from '../watcher'
 
 test( 'should have $watch, $unwatch, $update', () => {
-	const ob = new Watcher();
+	const ob = new Watcher()
 
-	expect( ob.$watch ).toBeDefined();
-	expect( ob.$unwatch ).toBeDefined();
-	expect( ob.$update ).toBeDefined();
-} );
+	expect( ob.$watch ).toBeDefined()
+	expect( ob.$unwatch ).toBeDefined()
+	expect( ob.$update ).toBeDefined()
+} )

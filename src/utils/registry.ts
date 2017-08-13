@@ -1,20 +1,20 @@
 export default function createRegistry() {
-	const stash = {};
+	const stash = {}
 
 	return {
 		find( name ) {
 			if ( typeof stash[ name ] !== 'undefined' ) {
-				return stash[ name ];
+				return stash[ name ]
 			}
 		},
 		findMany( names ) {
-			return names.map( this.find );
+			return names.map( this.find )
 		},
 		register( name, stuff ) {
-			stash[ name ] = stuff;
+			stash[ name ] = stuff
 		},
-		unregistry( name ) {
-			delete stash[ name ];
+		unregister( name ) {
+			delete stash[ name ]
 		},
-	};
+	}
 }

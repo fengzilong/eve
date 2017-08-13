@@ -1,171 +1,171 @@
-import { Emitter, mixin } from '../emitter';
+import { Emitter, mixin } from '../emitter'
 
 test( 'Emitter $on and $emit', () => {
-	const emitter = new Emitter();
-	const fn = jest.fn();
+	const emitter = new Emitter()
+	const fn = jest.fn()
 
-	emitter.$on( 'foo', fn );
-	emitter.$emit( 'foo', 'bar' );
+	emitter.$on( 'foo', fn )
+	emitter.$emit( 'foo', 'bar' )
 
-	expect( fn ).toHaveBeenCalledTimes( 1 );
-	expect( fn ).toHaveBeenCalledWith( 'bar' );
+	expect( fn ).toHaveBeenCalledTimes( 1 )
+	expect( fn ).toHaveBeenCalledWith( 'bar' )
 
-	emitter.$emit( 'foo', 'bar2' );
+	emitter.$emit( 'foo', 'bar2' )
 
-	expect( fn ).toHaveBeenCalledTimes( 2 );
-	expect( fn ).toHaveBeenCalledWith( 'bar2' );
-} );
+	expect( fn ).toHaveBeenCalledTimes( 2 )
+	expect( fn ).toHaveBeenCalledWith( 'bar2' )
+} )
 
 test( 'Emitter $off should work', () => {
-	const emitter = new Emitter();
-	const fn = jest.fn();
+	const emitter = new Emitter()
+	const fn = jest.fn()
 
-	emitter.$on( 'foo', fn );
-	emitter.$off( 'foo', fn );
-	emitter.$emit( 'foo' );
+	emitter.$on( 'foo', fn )
+	emitter.$off( 'foo', fn )
+	emitter.$emit( 'foo' )
 
-	expect( fn ).toHaveBeenCalledTimes( 0 );
-} );
+	expect( fn ).toHaveBeenCalledTimes( 0 )
+} )
 
 test( 'Emitter $once should work', () => {
-	const emitter = new Emitter();
-	const fn = jest.fn();
+	const emitter = new Emitter()
+	const fn = jest.fn()
 
-	emitter.$once( 'foo', fn );
-	emitter.$emit( 'foo' );
-	emitter.$emit( 'foo' );
+	emitter.$once( 'foo', fn )
+	emitter.$emit( 'foo' )
+	emitter.$emit( 'foo' )
 
-	expect( fn ).toHaveBeenCalledTimes( 1 );
-} );
+	expect( fn ).toHaveBeenCalledTimes( 1 )
+} )
 
 test( 'mixin should work', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	expect( target.$on ).toBeDefined();
-	expect( target.$once ).toBeDefined();
-	expect( target.$off ).toBeDefined();
-	expect( target.$emit ).toBeDefined();
-} );
+	expect( target.$on ).toBeDefined()
+	expect( target.$once ).toBeDefined()
+	expect( target.$off ).toBeDefined()
+	expect( target.$emit ).toBeDefined()
+} )
 
 test( 'mixin $on, $off, $emit should work', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn = jest.fn();
-	target.$on( 'foo', fn );
-	target.$emit( 'foo', 'bar' );
-	target.$off( 'foo', fn );
-	target.$emit( 'foo', 'bar' );
+	const fn = jest.fn()
+	target.$on( 'foo', fn )
+	target.$emit( 'foo', 'bar' )
+	target.$off( 'foo', fn )
+	target.$emit( 'foo', 'bar' )
 
-	expect( fn ).toHaveBeenCalledTimes( 1 );
-} );
+	expect( fn ).toHaveBeenCalledTimes( 1 )
+} )
 
 test( 'mixin $once should work', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn = jest.fn();
-	target.$once( 'foo', fn );
-	target.$emit( 'foo', 'bar' );
-	target.$emit( 'foo', 'bar' );
+	const fn = jest.fn()
+	target.$once( 'foo', fn )
+	target.$emit( 'foo', 'bar' )
+	target.$emit( 'foo', 'bar' )
 
-	expect( fn ).toHaveBeenCalledTimes( 1 );
-} );
+	expect( fn ).toHaveBeenCalledTimes( 1 )
+} )
 
 test( 'multiple $on', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn1 = jest.fn();
-	const fn2 = jest.fn();
-	target.$on( 'foo', fn1 );
-	target.$on( 'foo', fn2 );
+	const fn1 = jest.fn()
+	const fn2 = jest.fn()
+	target.$on( 'foo', fn1 )
+	target.$on( 'foo', fn2 )
 
-	target.$emit( 'foo' );
-	expect( fn1 ).toHaveBeenCalledTimes( 1 );
-	expect( fn2 ).toHaveBeenCalledTimes( 1 );
+	target.$emit( 'foo' )
+	expect( fn1 ).toHaveBeenCalledTimes( 1 )
+	expect( fn2 ).toHaveBeenCalledTimes( 1 )
 
-	target.$emit( 'foo' );
-	expect( fn1 ).toHaveBeenCalledTimes( 2 );
-	expect( fn2 ).toHaveBeenCalledTimes( 2 );
-} );
+	target.$emit( 'foo' )
+	expect( fn1 ).toHaveBeenCalledTimes( 2 )
+	expect( fn2 ).toHaveBeenCalledTimes( 2 )
+} )
 
 test( 'multiple $on with the same fn', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn = jest.fn();
-	target.$on( 'foo', fn );
-	target.$on( 'foo', fn );
+	const fn = jest.fn()
+	target.$on( 'foo', fn )
+	target.$on( 'foo', fn )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 2 );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 2 )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 4 );
-} );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 4 )
+} )
 
 test( 'multiple $once', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn1 = jest.fn();
-	const fn2 = jest.fn();
-	target.$once( 'foo', fn1 );
-	target.$once( 'foo', fn2 );
+	const fn1 = jest.fn()
+	const fn2 = jest.fn()
+	target.$once( 'foo', fn1 )
+	target.$once( 'foo', fn2 )
 
-	target.$emit( 'foo' );
-	expect( fn1 ).toHaveBeenCalledTimes( 1 );
-	expect( fn2 ).toHaveBeenCalledTimes( 1 );
+	target.$emit( 'foo' )
+	expect( fn1 ).toHaveBeenCalledTimes( 1 )
+	expect( fn2 ).toHaveBeenCalledTimes( 1 )
 
-	target.$emit( 'foo' );
-	expect( fn1 ).toHaveBeenCalledTimes( 1 );
-	expect( fn2 ).toHaveBeenCalledTimes( 1 );
-} );
+	target.$emit( 'foo' )
+	expect( fn1 ).toHaveBeenCalledTimes( 1 )
+	expect( fn2 ).toHaveBeenCalledTimes( 1 )
+} )
 
 test( 'multiple $once with the same fn', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn = jest.fn();
-	target.$once( 'foo', fn );
-	target.$once( 'foo', fn );
+	const fn = jest.fn()
+	target.$once( 'foo', fn )
+	target.$once( 'foo', fn )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 2 );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 2 )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 2 );
-} );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 2 )
+} )
 
 test( 'multiple $once and $off', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn = jest.fn();
-	target.$once( 'foo', fn );
-	target.$once( 'foo', fn );
-	target.$off( 'foo', fn );
+	const fn = jest.fn()
+	target.$once( 'foo', fn )
+	target.$once( 'foo', fn )
+	target.$off( 'foo', fn )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 0 );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 0 )
 
-	target.$emit( 'foo' );
-	expect( fn ).toHaveBeenCalledTimes( 0 );
-} );
+	target.$emit( 'foo' )
+	expect( fn ).toHaveBeenCalledTimes( 0 )
+} )
 
 test( '$off all listeners', () => {
-	const target = {};
-	mixin( target );
+	const target = {}
+	mixin( target )
 
-	const fn1 = jest.fn();
-	const fn2 = jest.fn();
-	target.$once( 'foo', fn1 );
-	target.$once( 'foo', fn2 );
-	target.$off( 'foo' );
+	const fn1 = jest.fn()
+	const fn2 = jest.fn()
+	target.$once( 'foo', fn1 )
+	target.$once( 'foo', fn2 )
+	target.$off( 'foo' )
 
-	target.$emit( 'foo' );
-	expect( fn1 ).toHaveBeenCalledTimes( 0 );
-	expect( fn2 ).toHaveBeenCalledTimes( 0 );
-} );
+	target.$emit( 'foo' )
+	expect( fn1 ).toHaveBeenCalledTimes( 0 )
+	expect( fn2 ).toHaveBeenCalledTimes( 0 )
+} )
