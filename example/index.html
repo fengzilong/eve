@@ -5,9 +5,7 @@
 		<title>demo</title>
 	</head>
 	<body>
-		<div id="app">
-
-		</div>
+		<div id="app"></div>
 
 		<script type="text/javascript" src="../dist/pulse.js"></script>
 		<script type="text/javascript">
@@ -16,25 +14,25 @@
 
 				},
 				methods: {
+					helper( v ) {
+						return v++
+					},
 
+					onClick( e ) {
+						console.log( 'clicked' );
+					}
 				},
-				template() {
-					return `
-						{#if v}
-							<slot name="title"></slot>
+				template() `
+					{#if helper(v)}
+						<slot name="title"></slot>
 
-							{ content | filter1 | filter2 }
-							<div>{ content + 1 }</div>
-							<div @click={ onClick($e) }></div>
-						{/if}
+						{ helper( helper( v ) ) }
 
-						<div
-							a={ { a: b } }
-							c={ ds && c + 1 }
-							x={ true }
-						></div>
-					`;
-				},
+						<div>{#inc content }</div>
+
+						<div @click={ onClick($e) }></div>
+					{/if}
+				`,
 
 				// a | b: c, d | e
 				// a ? b : c
@@ -50,31 +48,20 @@
 				// $$paths: [],
 				// -> watchers
 
-				data() {
-					this._data = {a:9}
+				onCreated() {
+					this.data = { v: 9 }
 				},
 
-				onCreated() {
-					this._a = 123;
-					console.log( 'child onCreated' );
-				},
 				onMounted() {
 
 				},
+
 				onDisposed() {
 
 				},
 			} );
 
-			const ButtonX = Button.extend( {
-				onCreated() {
-					console.log( 'self onCreated' );
-				}
-			} );
-
-			console.dir( ButtonX );
-
-			const button = new ButtonX();
+			const button = new Button();
 
 			console.log( button );
 

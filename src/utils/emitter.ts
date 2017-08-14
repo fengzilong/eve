@@ -1,4 +1,4 @@
-export { Emitter, mixin }
+export { Emitter, emitable }
 
 // ----------------------
 
@@ -86,7 +86,7 @@ function createMethods() {
 	}
 }
 
-function mixin( target: any = {} ): void {
+function emitable( target: any = {} ): void {
 	if ( typeof target === 'function' ) {
 		Object.assign( target.prototype, createMethods() )
 	} else {
@@ -95,4 +95,4 @@ function mixin( target: any = {} ): void {
 }
 
 function Emitter() {} // tslint:disable-line
-mixin( Emitter )
+emitable( Emitter )

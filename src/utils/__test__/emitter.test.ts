@@ -1,4 +1,4 @@
-import { Emitter, mixin } from '../emitter'
+import { Emitter, emitable } from '../emitter'
 
 test( 'Emitter $on and $emit', () => {
 	const emitter = new Emitter()
@@ -38,9 +38,9 @@ test( 'Emitter $once should work', () => {
 	expect( fn ).toHaveBeenCalledTimes( 1 )
 } )
 
-test( 'mixin should work', () => {
+test( 'emitable should work', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	expect( target.$on ).toBeDefined()
 	expect( target.$once ).toBeDefined()
@@ -48,9 +48,9 @@ test( 'mixin should work', () => {
 	expect( target.$emit ).toBeDefined()
 } )
 
-test( 'mixin $on, $off, $emit should work', () => {
+test( 'emitable $on, $off, $emit should work', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn = jest.fn()
 	target.$on( 'foo', fn )
@@ -61,9 +61,9 @@ test( 'mixin $on, $off, $emit should work', () => {
 	expect( fn ).toHaveBeenCalledTimes( 1 )
 } )
 
-test( 'mixin $once should work', () => {
+test( 'emitable $once should work', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn = jest.fn()
 	target.$once( 'foo', fn )
@@ -75,7 +75,7 @@ test( 'mixin $once should work', () => {
 
 test( 'multiple $on', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn1 = jest.fn()
 	const fn2 = jest.fn()
@@ -93,7 +93,7 @@ test( 'multiple $on', () => {
 
 test( 'multiple $on with the same fn', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn = jest.fn()
 	target.$on( 'foo', fn )
@@ -108,7 +108,7 @@ test( 'multiple $on with the same fn', () => {
 
 test( 'multiple $once', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn1 = jest.fn()
 	const fn2 = jest.fn()
@@ -126,7 +126,7 @@ test( 'multiple $once', () => {
 
 test( 'multiple $once with the same fn', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn = jest.fn()
 	target.$once( 'foo', fn )
@@ -141,7 +141,7 @@ test( 'multiple $once with the same fn', () => {
 
 test( 'multiple $once and $off', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn = jest.fn()
 	target.$once( 'foo', fn )
@@ -157,7 +157,7 @@ test( 'multiple $once and $off', () => {
 
 test( '$off all listeners', () => {
 	const target = {}
-	mixin( target )
+	emitable( target )
 
 	const fn1 = jest.fn()
 	const fn2 = jest.fn()

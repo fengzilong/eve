@@ -1,18 +1,21 @@
 import makeClass from './core/makeClass'
 import { Watcher } from './core/watcher'
-import { mixin as mixinEmitter } from './utils/emitter'
+import { emitable } from './utils/emitter'
+import createRender from './core/vdom/render'
+import patch from './core/vdom/patch'
 
 export default makeClass(
-	// abstract + public
+	// prototype
 	{
-		data() {},
-		onCreated() {},
-		onMounted() {},
-		onDisposed() {},
+		onCreated() {}, //abstract
+
+		onMounted() {}, //abstract
+
+		onDisposed() {}, //abstract
 
 		$mount() {
+			this.$update()
 			this.onMounted()
-			// this._disposable.add( addEvent( 'click', a ) )
 		},
 
 		$unmount() {
@@ -20,7 +23,15 @@ export default makeClass(
 		},
 
 		$update() {
-			this._digest()
+
+		},
+
+		$watch() {
+
+		},
+
+		$unwatch() {
+
 		},
 	},
 
@@ -44,6 +55,29 @@ export default makeClass(
 	},
 
 	function () {
-		mixinEmitter( this )
+		emitable( this )
+
+		this.data = {}
+
+		this.onCreated()
+
+		const { ast, dependencies } = parseTemplate( this.template || '' )
+
+		this.$watch( dependencies )
+
+		const render = createRender( ast )
+
+		this.$on( '__digest:end__', () => {
+			// TODO: computed
+			const computed = {}
+			patch( render( { ...this.data, ...computed } ) )
+		} )
 	}
 )
+
+function parseTemplate( template: string ): any {
+	return {
+		ast: [],
+		dependencies: []
+	}
+}

@@ -42,6 +42,8 @@ function createExtend( staticProps: Object ): Function {
 		Object.assign( Child, staticProps )
 		// merge to prototype
 		Child.implement( definition )
+		// chain parent
+		Child.parent = parent
 
 		return Child
 	}
