@@ -19,18 +19,22 @@
 					},
 
 					onClick( e ) {
-						console.log( 'clicked' );
+						console.log( 'clicked' )
 					}
 				},
-				template() `
+				template: `
 					{#if helper(v)}
 						<slot name="title"></slot>
 
 						{ helper( helper( v ) ) }
 
-						<div>{#inc content }</div>
+						<div>
+							abc
+							{#inc content }
+							def
+						</div>
 
-						<div @click={ onClick($e) }></div>
+						<div @click="{ onClick($e) }"></div>
 					{/if}
 				`,
 
@@ -48,14 +52,22 @@
 				// $$paths: [],
 				// -> watchers
 
+				// 实例被创建
 				onCreated() {
 					this.data = { v: 9 }
 				},
 
+				// 被挂载到dom中
 				onMounted() {
 
 				},
 
+				// 从dom中脱离
+				onUnmounted() {
+
+				},
+
+				// 被销毁
 				onDisposed() {
 
 				},

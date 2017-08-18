@@ -1,8 +1,9 @@
-import makeClass from './core/makeClass'
-import { Watcher } from './core/watcher'
+import makeClass from './makeClass'
+import { Watcher } from './watcher'
 import { emitable } from './utils/emitter'
-import createRender from './core/vdom/render'
-import patch from './core/vdom/patch'
+import createRender from './vdom/render'
+import patch from './vdom/patch'
+import parse from './parser'
 
 export default makeClass(
 	// prototype
@@ -60,6 +61,8 @@ export default makeClass(
 		this.data = {}
 
 		this.onCreated()
+
+		console.log( parse( this.template || '' ) )
 
 		const { ast, dependencies } = parseTemplate( this.template || '' )
 
