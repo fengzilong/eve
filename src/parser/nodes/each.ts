@@ -4,5 +4,5 @@ export default function ( { sequence = '', item = '', body = [] } ) {
 		sequence,
 		item,
 		body,
-	};
+	}
 }

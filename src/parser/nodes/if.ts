@@ -4,5 +4,5 @@ export default function IfStatement ( { test, consequent, alternate } ) {
 		test,
 		consequent,
 		alternate,
-	};
+	}
 }

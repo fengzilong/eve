@@ -4,5 +4,5 @@ export default function ( { name = '', attributes = {}, children = [], isSelfClo
 		attributes,
 		children,
 		isSelfClosed,
-	};
+	}
 }

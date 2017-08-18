@@ -1,17 +1,17 @@
-import compile from './shared/compile-regex';
+import compile from './shared/compile-regex'
 
 const _ = ( function () {
 	// https://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-QName
-	const ncname = '[a-zA-Z_][\\w\\-\\.]*';
+	const ncname = '[a-zA-Z_][\\w\\-\\.]*'
 	const atomic = {
 		TAG_NAME: `(?:${ ncname }\\:)?${ ncname }`,
 		IDENT: `[\\$_a-zA-Z][\\$_0-9a-zA-Z]*`,
 		BEGIN: `{`,
 		END: `}`,
-	};
+	}
 
-	return compile( atomic );
-} )();
+	return compile( atomic )
+} )()
 
 /* eslint-disable */
 export default {
@@ -37,5 +37,5 @@ export default {
 	// Others
 	TEXT: /^[^\x00]/,
 	WHITESPACE: /^\s+/,
-};
+}
 /* eslint-enable */
