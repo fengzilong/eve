@@ -213,8 +213,11 @@ class ExpressionParser {
 				this.expect( ')' )
 				return {
 					type: 'call',
-					callee: paths,
-					args
+					callee: {
+						type: 'member',
+						paths
+					},
+					arguments: args
 				}
 			} else {
 				if ( paths.length === 1 ) {
