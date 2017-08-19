@@ -12,6 +12,8 @@
 		"variable-name": false,
 		"no-use-before-declare": false,
 		"semicolon": false,
+		"curly": [ true, "ignore-same-line" ],
+		"no-conditional-assignment": false,
 		"trailing-comma": [
 			true,
 			{

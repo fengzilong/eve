@@ -3,18 +3,22 @@ import getCodeFrame from './shared/getCodeFrame'
 import { isSelfClosedTag } from './shared/is'
 import Lexer from './lexer'
 import nodes from './nodes/index'
+import parseExpression from './expression'
 
 export default class TemplateParser {
 	private source: string
 	private options: any
 	private lexer: Lexer
+	private dependencies: string[]
 
 	constructor( source = '', options = {} ) {
 		this.source = source
 		this.options = options
 	}
 
-	public parse() {
+	public parse( source ) {
+		this.source = source || this.source
+
 		// setup lexer
 		this.lexer = new Lexer( this.source, this.options )
 
@@ -221,12 +225,12 @@ export default class TemplateParser {
 			if ( token.type === 'mustacheOpen' ) {
 				switch ( token.value ) {
 				case 'elseif':
-						// continue reading `IfStatement` into alternate
+					// continue reading `IfStatement` into alternate
 					this.next()
 					node.alternate = this.if()
 					break
 				case 'else':
-						// now receiver is changed to alternate
+					// now receiver is changed to alternate
 					this.next()
 					this.accept( 'mustacheEnd' )
 					changeReceiver( ( node.alternate = nodes.Block() ) )
@@ -296,7 +300,7 @@ export default class TemplateParser {
 		}
 
 		return nodes.Expression( {
-			value: 'expression',
+			body: parseExpression( this.source, tokens ),
 		} )
 	}
 

@@ -1,6 +1,6 @@
-export default function ( body: any ) {
+export default function ( options?:{ body?: any } ) {
 	return {
 		type: 'Expression',
-		body: '',
+		body: options.body,
 	}
 }

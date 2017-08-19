@@ -35,7 +35,7 @@ function getCodeFrame( source, index ) {
 
 	const digits = String( frameEnd ).length
 
-	return lines
+	lines = lines
 		.map( ( str, i ) => {
 			const isErrorLine = frameStart + i + 1 === line
 
@@ -53,4 +53,6 @@ function getCodeFrame( source, index ) {
 			return `${ lineNum }: ${ tabsToSpaces( str ) }`
 		} )
 		.join( '\n' )
+
+	return '\n' + lines
 }

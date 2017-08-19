@@ -38,8 +38,8 @@ export default class TemplateLexer {
 		return this.stash[ --n ]
 	}
 
-	public peek() {
-		return this.lookahead( 1 )
+	public peek( n = 1 ) {
+		return this.lookahead( n )
 	}
 
 	public next() {

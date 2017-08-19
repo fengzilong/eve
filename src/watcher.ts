@@ -2,7 +2,7 @@
 
 import uid from './utils/uid'
 
-export { Watcher, mixin }
+export { Watcher, watchable }
 
 // ---------------------
 
@@ -62,7 +62,7 @@ function createMethods() {
 	}
 }
 
-function mixin( target: any = {} ): void {
+function watchable( target: any = {} ): void {
 	if ( typeof target === 'function' ) {
 		Object.assign( target.prototype, createMethods() )
 	} else {
@@ -71,4 +71,4 @@ function mixin( target: any = {} ): void {
 }
 
 function Watcher() {}
-mixin( Watcher )
+watchable( Watcher )

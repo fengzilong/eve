@@ -1,3 +1,3 @@
-export default function ( v: any ) {
+export default function ( oldVDOM: any, newVDOM: any ) {
 
 }

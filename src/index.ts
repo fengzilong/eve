@@ -1,5 +1,5 @@
 import makeClass from './makeClass'
-import { Watcher } from './watcher'
+import { watchable } from './watcher'
 import { emitable } from './utils/emitter'
 import createRender from './vdom/render'
 import patch from './vdom/patch'
@@ -57,23 +57,31 @@ export default makeClass(
 
 	function () {
 		emitable( this )
+		watchable( this )
 
 		this.data = {}
 
 		this.onCreated()
 
+		const start = Date.now()
 		console.log( parse( this.template || '' ) )
+		console.log( Date.now() - start )
 
-		const { ast, dependencies } = parseTemplate( this.template || '' )
-
+		const ast = parse( this.template || '' )
+		const dependencies = []
 		this.$watch( dependencies )
 
+		// create render function for following rendering
 		const render = createRender( ast )
 
-		this.$on( '__digest:end__', () => {
+		this.vdom = null
+		this.$on( 'digestend>ε<', () => {
 			// TODO: computed
 			const computed = {}
-			patch( render( { ...this.data, ...computed } ) )
+
+			const newVDOM = render( { ...this.data, ...computed } )
+			patch( this.vdom, newVDOM )
+			this.vdom = newVDOM
 		} )
 	}
 )
