@@ -1,5 +1,4 @@
 import { isSVGTag } from '../utils/is'
-import { SVG_NAMESPACE } from '../utils/constants'
 
 export {
 	createElement,
@@ -9,6 +8,8 @@ export {
 }
 
 // ----------------
+
+const SVG_NAMESPACE: string = 'http://www.w3.org/2000/svg'
 
 function createElement( tagName: string ) {
 	if ( isSVGTag( tagName ) ) {

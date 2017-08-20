@@ -1,4 +1,4 @@
-import { isFunction, isSVGTag, isSelfCloseTag } from '../is'
+import { isFunction, isSVGTag } from '../is'
 
 test( 'isFunction', () => {
 	function Foo() {}
@@ -15,9 +15,4 @@ test( 'isSVGTag', () => {
 	expect( isSVGTag( 'svg' ) ).toBe( true )
 	expect( isSVGTag( 'img' ) ).toBe( false )
 	expect( isSVGTag( 'div' ) ).toBe( false )
-} )
-
-test( 'isSelfCloseTag', () => {
-	expect( isSelfCloseTag( 'img' ) ).toBe( true )
-	expect( isSelfCloseTag( 'span' ) ).toBe( false )
 } )

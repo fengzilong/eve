@@ -1,8 +1,8 @@
-const SELF_CLOSED_TAGS = '' +
+const SELF_CLOSED_TAGS: string[] = (
 	'area,base,br,col,embed,hr,' +
 	'img,input,keygen,link,menuitem,' +
 	'meta,param,source,track,wbr'
-	.split( ',' )
+).split( ',' )
 
 const selfClosedTagMap = {}
 for ( let i = 0, len = SELF_CLOSED_TAGS.length; i < len; i++ ) {
