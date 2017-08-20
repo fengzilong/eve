@@ -16,7 +16,7 @@ function tabsToSpaces( str ) {
 	return str.replace( /^\t+/, match => match.split( '\t' ).join( '  ' ) )
 }
 
-function getCodeFrame( source, index ) {
+function getCodeFrame( source: string, index: number ): string {
 	const locate = getLocator( source, {
 		offsetLine: 1,
 	} )
@@ -35,7 +35,7 @@ function getCodeFrame( source, index ) {
 
 	const digits = String( frameEnd ).length
 
-	lines = lines
+	return '\n' + lines
 		.map( ( str, i ) => {
 			const isErrorLine = frameStart + i + 1 === line
 
@@ -53,6 +53,4 @@ function getCodeFrame( source, index ) {
 			return `${ lineNum }: ${ tabsToSpaces( str ) }`
 		} )
 		.join( '\n' )
-
-	return '\n' + lines
 }

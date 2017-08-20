@@ -19,13 +19,16 @@ export default class TemplateParser {
 	private options: any
 	private lexer: Lexer
 	private dependencies: string[]
+	private scanned: any[]
 
 	constructor( source = '', options = {} ) {
 		this.source = source
 		this.options = options
+		this.scanned = []
 	}
 
 	public parse( source ) {
+		this.scanned = []
 		this.source = source || this.source
 
 		// setup lexer
@@ -43,9 +46,14 @@ export default class TemplateParser {
 		return this.lexer.peek()
 	}
 
+	private peekBefore() {
+		return this.scanned[ this.scanned.length - 1 ]
+	}
+
 	private next() {
-		// console.log( this.lexer.peek().type, this.lexer.peek().frame )
-		return this.lexer.next()
+		const token = this.lexer.next()
+		this.scanned.push( token )
+		return token
 	}
 
 	private skip( types ) {
@@ -73,12 +81,13 @@ export default class TemplateParser {
 			return this.next()
 		}
 
-		const codeframe = getCodeFrame( this.source, token.pos )
-
-		this.error( `Expect ${ type }, but got ${ token.type }, codeframe: ${ codeframe }` )
+		this.error( {
+			message: `Expect ${ type }, but got ${ token.type }`,
+			pos: token.pos
+		} )
 	}
 
-	private error( err ) {
+	private error( err: any ) {
 		if ( typeof err === 'string' ) {
 			throw new ParserError( err )
 		} else if ( typeof err === 'object' ) {
@@ -121,7 +130,7 @@ export default class TemplateParser {
 			case 'tagOpen':
 				return this.tag()
 			case 'mustacheOpen':
-				return this.directive()
+				return this.command()
 			case 'interpolationOpen':
 				return this.interpolation()
 			case 'comment':
@@ -129,7 +138,7 @@ export default class TemplateParser {
 				return
 			default:
 				return this.error( {
-					message: `[statement] Unexpected token ${token.type}`,
+					message: `Unexpected token ${token.type}`,
 					pos: token.pos
 				} )
 		}
@@ -147,8 +156,11 @@ export default class TemplateParser {
 	}
 
 	private tag() {
+		const tagToken = this.next()
+		const tagName = tagToken.value.name
+
 		const node = nodes.Tag( {
-			name: this.next().value.name,
+			name: tagName,
 		} )
 
 		while ( this.peek().type !== 'tagEnd' && this.peek().type !== 'eos' ) {
@@ -159,33 +171,39 @@ export default class TemplateParser {
 		const tagEndToken = this.expect( 'tagEnd' )
 
 		// ends with `/>` or matches self-closed tags defined in w3c
-		if ( tagEndToken.value.isSelfClosed || isSelfClosedTag( node.name ) ) {
+		if ( tagEndToken.value.isSelfClosed || isSelfClosedTag( tagName ) ) {
 			return node
 		}
 
 		node.children = this.statements() || []
 
-		const closeToken = this.expect( 'tagClose' )
-		if ( closeToken.value.name !== node.name ) {
-			this.error( `Unmatched close tag for ${ node.name }` )
+		const closeToken = this.accept( 'tagClose' )
+		if ( !closeToken || closeToken.value.name !== tagName ) {
+			this.error( {
+				message: `Close tag not found for <${ tagName }>`,
+				pos: tagToken.pos + Math.ceil( tagName.length / 2 )
+			} )
 		}
 
 		return node
 	}
 
-	// {#directive expr}{/directive}, such as if, list
-	private directive() {
+	// {#command expr}{/command}, such as if, list
+	private command() {
 		const token = this.accept( 'mustacheOpen' )
 		switch ( token.value ) {
-		case 'if':
-			return this.if()
-		case 'each':
-			return this.each()
-		case 'inc':
-		case 'include':
-			return this.include()
-		default:
-			this.error( `Unexpected directive ${ token.value }` )
+			case 'if':
+				return this.if()
+			case 'each':
+				return this.each()
+			case 'inc':
+			case 'include':
+				return this.include()
+			default:
+				this.error( {
+					message: `Command {#${ token.value } ...} cannot be recoginized`,
+					pos: token.pos + 2
+				} )
 		}
 	}
 
@@ -202,6 +220,8 @@ export default class TemplateParser {
 	}
 
 	private ['if']() {
+		const ifToken = this.peekBefore()
+
 		const node = nodes.If( {
 			test: this.expression(), // match expression as `test`
 			consequent: null, // set it later
@@ -240,36 +260,41 @@ export default class TemplateParser {
 
 			if ( token.type === 'mustacheOpen' ) {
 				switch ( token.value ) {
-				case 'elseif':
-					// continue reading `IfStatement` into alternate
-					this.next()
-					node.alternate = this.if()
-					break
-				case 'else':
-					// now receiver is changed to alternate
-					this.next()
-					this.accept( 'mustacheEnd' )
-					changeReceiver( ( node.alternate = nodes.Block() ) )
-					break
-				default:
-					receive( this.statement() )
-					break
+					case 'elseif':
+						// continue reading `IfStatement` into alternate
+						this.next()
+						node.alternate = this.if()
+						break
+					case 'else':
+						// now receiver is changed to alternate
+						this.next()
+						this.accept( 'mustacheEnd' )
+						changeReceiver( ( node.alternate = nodes.Block() ) )
+						break
+					default:
+						receive( this.statement() )
+						break
 				}
 			} else {
 				receive( this.statement() )
 			}
 		}
 
-		const mustacheCloseToken = this.expect( 'mustacheClose' )
+		const mustacheCloseToken = this.accept( 'mustacheClose' )
 
 		// maybe {/each}? it's not what we want
-		if ( mustacheCloseToken.value !== 'if' ) {
-			this.error( 'Expect {/if} for {#if}' )
+		if ( !mustacheCloseToken || mustacheCloseToken.value !== 'if' ) {
+			this.error( {
+				message: '{/if} cannot be found',
+				pos: ifToken.pos + 2
+			} )
 		}
 
 		return node
 	}
 	private each() {
+		const eachToken = this.peekBefore()
+
 		const node = nodes.Each( {
 			sequence: null,
 			item: null,
@@ -287,13 +312,16 @@ export default class TemplateParser {
 			}
 		}
 
-		while ( this.peek().type !== 'mustacheClose' ) {
+		while ( this.peek().type !== 'mustacheClose' && this.peek().type !== 'eos' ) {
 			receive( this.statement() )
 		}
 
-		const token = this.expect( 'mustacheClose' )
-		if ( token.value !== 'each' ) {
-			this.error( 'unmatched each' )
+		const token = this.accept( 'mustacheClose' )
+		if ( !token || token.value !== 'each' ) {
+			this.error( {
+				message: '{/each} cannot be found',
+				pos: eachToken.pos + 2
+			} )
 		}
 
 		return node

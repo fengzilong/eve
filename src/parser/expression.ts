@@ -19,7 +19,6 @@ export default class ExpressionParser {
 	// logicalOr ? ternary : ternary
 	// logicalOr
 	private ternary() {
-		// debugger
 		const test = this.logicalOr()
 
 		if ( this.accept( '?' ) ) {

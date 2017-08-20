@@ -47,12 +47,15 @@
 				},
 				template:
 				`
-					<div @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</div>
+					<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
 					<input :value="{ v }" @keyup.enter="{ onEnter() }" />
 
 					{#if v.length > 5}
 						文字长度不能超过5
 					{/if}
+
+					{#each abc}
+					{each}
 				`
 				,
 
