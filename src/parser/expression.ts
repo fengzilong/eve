@@ -1,11 +1,7 @@
 import ParserError from './error/ParserError'
 import getCodeFrame from './utils/getCodeFrame'
 
-export default ExpressionParser
-
-// ---
-
-class ExpressionParser {
+export default class ExpressionParser {
 	private source: string
 	private tokens: any[]
 	private exprStr: string
