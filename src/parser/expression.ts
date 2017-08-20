@@ -4,7 +4,6 @@ import getCodeFrame from './utils/getCodeFrame'
 export default class ExpressionParser {
 	private source: string
 	private tokens: any[]
-	private exprStr: string
 	private markers: { parenthesis: number }
 
 	public parse( source = '', tokens = [] ) {
@@ -13,8 +12,6 @@ export default class ExpressionParser {
 		this.markers = {
 			parenthesis: 0
 		}
-
-		this.exprStr = ''
 
 		return this.ternary()
 	}
