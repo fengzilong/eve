@@ -1,7 +1,7 @@
-import ParserError from './shared/error/ParserError'
-import getCodeFrame from './shared/getCodeFrame'
+import ParserError from './error/ParserError'
+import getCodeFrame from './utils/getCodeFrame'
 
-export default parseExpression
+export default ExpressionParser
 
 // ---
 
@@ -444,11 +444,4 @@ function isTokenAcceptable( token, type ) {
 	}
 
 	return false
-}
-
-// ---
-
-const parser = new ExpressionParser()
-function parseExpression( source, tokens ) {
-	return parser.parse( source, tokens )
 }

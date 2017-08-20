@@ -1,13 +1,15 @@
 export default class State {
-	_: string[]
+	private _: string[]
 
 	constructor() {
 		this._ = []
 	}
-	enter( state ) {
+
+	public enter( state ) {
 		this._.push( state )
 	}
-	leave( state ) {
+
+	public leave( state ) {
 		if ( !state ) {
 			return this._.pop()
 		}
@@ -16,10 +18,12 @@ export default class State {
 			return this._.pop()
 		}
 	}
-	last() {
+
+	public last() {
 		return this._[ this._.length - 1 ]
 	}
-	is( state ) {
+
+	public is( state ) {
 		return this.last() === state
 	}
 }

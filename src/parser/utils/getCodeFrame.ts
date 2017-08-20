@@ -1,6 +1,6 @@
 // https://github.com/rollup/rollup/blob/master/src/utils/getCodeFrame.js
 
-import { getLocator } from './locate-character'
+import { getLocator } from './locateCharacter'
 
 export default getCodeFrame
 

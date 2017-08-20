@@ -8,15 +8,16 @@
     "dev": "webpack -w",
     "dist": "webpack",
     "precommit": "npm test",
-    "lint": "tslint src/**/*.ts --exclude \"**/__test__/**\" --format codeFrame",
+    "lint": "tslint --exclude \"**/__test__/**\" --format codeFrame src/**/*.ts",
     "prepublish": "webpack"
   },
   "jest": {
     "collectCoverage": true,
     "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "src/**/*.{ts}",
-      "!**/node_modules/**"
+    "collectCoverageFrom": [ "src/**/*.{ts}" ],
+    "coveragePathIgnorePatterns": [
+        "node_modules",
+        "<rootDir>/src/parser/nodes"
     ],
     "transform": {
       "^.+\\.(js|ts)$": "typescript-babel-jest"

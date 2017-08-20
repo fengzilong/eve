@@ -9,6 +9,6 @@ for ( let i = 0, len = SELF_CLOSED_TAGS.length; i < len; i++ ) {
 	selfClosedTagMap[ SELF_CLOSED_TAGS[ i ] ] = true
 }
 
-export function isSelfClosedTag( tagName: string ):boolean {
-	return selfClosedTagMap[ tagName ]
+export default function isSelfClosedTag( tagName: string ):boolean {
+	return selfClosedTagMap[ tagName ] ? true : false
 }

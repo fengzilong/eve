@@ -1,9 +1,18 @@
-import ParserError from './shared/error/ParserError'
-import getCodeFrame from './shared/getCodeFrame'
-import { isSelfClosedTag } from './shared/is'
+import ParserError from './error/ParserError'
+import getCodeFrame from './utils/getCodeFrame'
+import isSelfClosedTag from './utils/isSelfClosedTag'
 import Lexer from './lexer'
-import nodes from './nodes/index'
-import parseExpression from './expression'
+import nodes from './nodeType/index'
+import ExpressionParser from './expression'
+
+// ---
+
+const parser = new ExpressionParser()
+function parseExpression( source, tokens ) {
+	return parser.parse( source, tokens )
+}
+
+// ---
 
 export default class TemplateParser {
 	private source: string

@@ -1,4 +1,4 @@
-import { isSelfClosedTag } from '../is'
+import isSelfClosedTag from '../isSelfClosedTag'
 
 test( 'isSelfClosedTag', () => {
 	expect( isSelfClosedTag( 'img' ) ).toBe( true )
