@@ -92,14 +92,16 @@ class ExpressionParser {
 
 		let token
 		if (
-			this.accept( '===' ) ||
-			this.accept( '!==' ) ||
-			this.accept( '==' ) ||
-			this.accept( '!=' ) ||
-			this.accept( '>=' ) ||
-			this.accept( '<=' ) ||
-			this.accept( '<' ) ||
-			this.accept( '>' )
+			token = (
+				this.accept( '===' ) ||
+				this.accept( '!==' ) ||
+				this.accept( '==' ) ||
+				this.accept( '!=' ) ||
+				this.accept( '>=' ) ||
+				this.accept( '<=' ) ||
+				this.accept( '<' ) ||
+				this.accept( '>' )
+			)
 		) {
 			return {
 				type: 'binary',
@@ -185,48 +187,51 @@ class ExpressionParser {
 		}
 	}
 
-	// ident[ ident | string | number ]( arguments )
-	// ident[ ident | string | number ]
-	// ident.ident( arguments )
-	// ident.ident|number
-	// ident
+	// primary[ ident | string | number ]( arguments )
+	// primary[ ident | string | number ]
+	// primary.ident( arguments )
+	// primary.ident|number
+	// primary
 	private member( paths?: any[] ) {
-		let ident = this.accept( 'ident' )
+		if ( !paths ) {
+			// only read primary as start point
+			let primary = this.primary()
 
-		// first time, use [ ident ] as base
-		if ( ident ) {
-			return this.member( [ ident ] )
+			// first time, use [ primary ] as base
+			if ( primary ) {
+				return this.member( [ primary ] )
+			}
+
+			return
 		}
 
-		if ( paths ) {
-			if ( this.accept( '.' ) ) {
-				const token = this.expect( 'ident' )
-				paths.push( token )
-				return this.member( paths )
-			} else if ( this.accept( '[' ) ) {
-				const body = this.ternary()
-				this.expect( ']' )
-				paths.push( body )
-				return this.member( paths )
-			} else if ( this.accept( '(' ) ) {
-				const args = this.arguments()
-				this.expect( ')' )
-				return {
-					type: 'call',
-					callee: {
-						type: 'member',
-						paths
-					},
-					arguments: args
-				}
+		if ( this.accept( '.' ) ) {
+			const token = this.expect( 'ident' )
+			paths.push( token )
+			return this.member( paths )
+		} else if ( this.accept( '[' ) ) {
+			const body = this.ternary()
+			this.expect( ']' )
+			paths.push( body )
+			return this.member( paths )
+		} else if ( this.accept( '(' ) ) {
+			const args = this.arguments()
+			this.expect( ')' )
+			return {
+				type: 'call',
+				callee: {
+					type: 'member',
+					paths
+				},
+				arguments: args
+			}
+		} else {
+			if ( paths.length === 1 ) {
+				return paths[ 0 ]
 			} else {
-				if ( paths.length === 1 ) {
-					return paths[ 0 ]
-				} else {
-					return {
-						type: 'member',
-						paths
-					}
+				return {
+					type: 'member',
+					paths
 				}
 			}
 		}
@@ -260,9 +265,111 @@ class ExpressionParser {
 		}
 	}
 
+	// ident
+	// object
+	// array
+	// string
+	// number
+	private primary() {
+		const token = this.peek()
+
+		if ( !token ) {
+			return
+		}
+
+		switch ( token.type ) {
+			case 'ident':
+			case 'string':
+			case 'number':
+				return this.next()
+			case 'symbol':
+				switch ( token.value ) {
+					case '(':
+						return this.parenthesis()
+					case '[':
+						return this.array()
+					case '{':
+						return this.object()
+					default:
+						// empty
+				}
+			default:
+				// empty
+		}
+	}
+
+	// { ident|string|number: ternary [,ident|string|number: ternary]* }
+	private object() {
+		const properties = []
+
+		this.accept( '{' )
+
+		let token
+		while (
+			token =
+			this.accept( 'ident' ) || this.accept( 'string' ) || this.accept( 'number' )
+		) {
+			this.accept( ':' )
+			const ternary = this.ternary()
+
+			properties.push( {
+				key: String( token.value ),
+				value: ternary
+			} )
+
+			if ( !this.accept( ',' ) ) {
+				break;
+			}
+		}
+
+		this.expect( '}' )
+
+		return {
+			type: 'object',
+			properties
+		}
+	}
+
+	// [ primary [,primary]* ]
+	private array() {
+		const elements = []
+
+		this.accept( '[' )
+
+		if ( this.accept( ']' ) ) {
+			return {
+				type: 'array',
+				elements
+			}
+		}
+
+		elements.push( this.ternary() )
+
+		let token
+		while ( token = this.accept( ',' ) ) {
+			elements.push( this.ternary() )
+		}
+
+		this.expect( ']' )
+
+		return {
+			type: 'array',
+			elements
+		}
+	}
+
 	// ( ternary )
 	private parenthesis() {
+		let ternary
 
+		if ( this.accept( '(' ) ) {
+			ternary = this.ternary()
+			this.expect( ')' )
+		} else {
+			ternary = this.ternary()
+		}
+
+		return ternary
 	}
 
 	private peek( n = 1 ) {

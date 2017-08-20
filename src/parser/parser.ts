@@ -69,8 +69,14 @@ export default class TemplateParser {
 		this.error( `Expect ${ type }, but got ${ token.type }, codeframe: ${ codeframe }` )
 	}
 
-	private error( message ) {
-		throw new ParserError( message )
+	private error( err ) {
+		if ( typeof err === 'string' ) {
+			throw new ParserError( err )
+		} else if ( typeof err === 'object' ) {
+			throw new ParserError( err.message, {
+				codeframe: getCodeFrame( this.source, err.pos )
+			} )
+		}
 	}
 
 	// multiple statements, like `text + tag + text`, we should gather them in an array
@@ -113,9 +119,10 @@ export default class TemplateParser {
 				this.next()
 				return
 			default:
-				return this.error(
-					`[statement] Unexpected token ${token.type}, code frame: ${token.frame}`
-				)
+				return this.error( {
+					message: `[statement] Unexpected token ${token.type}`,
+					pos: token.pos
+				} )
 		}
 	}
 

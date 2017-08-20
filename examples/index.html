@@ -9,33 +9,49 @@
 
 		<script type="text/javascript" src="../dist/pulse.js"></script>
 		<script type="text/javascript">
+		`
+		{#if !helper[ a + b ](v)}
+			<slot name="title"></slot>
+
+			{ v + 1 && k ? '' : helper( helper( v ) ) }
+
+			<div>
+				abc
+				{#inc content }
+				def
+			</div>
+
+			<div @click="{ onClick($e) }"></div>
+		{/if}
+
+		{ a[ 1 + b * 2 ].b && c + 1 }
+		{#if !helper[ a + b ](v)}{/if}
+		{ v + 1 && k ? '' : helper( helper( v ) ) }
+		`;
 			const Button = Pulse.extend( {
 				computed: {
 
 				},
 				methods: {
-					helper( v ) {
-						return v++
+					isString( v ) {
+						return typeof v === 'string'
 					},
 
 					onClick( e ) {
-						console.log( 'clicked' )
+						console.log( 'clicked', e )
+					},
+
+					onEnter() {
+						console.log( 'entered' );
 					}
 				},
 				template:
 				`
-					{#if !helper[ a + b ](v)}
-						<slot name="title"></slot>
+					<div @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</div>
+					<input :value="{ v }" @keyup.enter="{ onEnter() }" />
 
-						{ v + 1 && k ? '' : helper( helper( v ) ) }
-
-						<div>
-							abc
-							{#inc content }
-							def
-						</div>
-
-						<div @click="{ onClick($e) }"></div>
+					{#if v.length > 5}
+						文字长度不能超过5
 					{/if}
 				`
 				,
@@ -46,7 +62,7 @@
 
 				// 实例被创建
 				onCreated() {
-					this.data = { v: 9 }
+					this.data.v = 9
 				},
 
 				// 被挂载到dom中

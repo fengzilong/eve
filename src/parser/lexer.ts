@@ -132,6 +132,10 @@ export default class TemplateLexer {
 		}
 	}
 	private tagEnd() {
+		if ( this.state.is( 'mustacheOpen' ) ) {
+			return
+		}
+
 		const captures = this.match( 'TAG_END' )
 		if ( captures ) {
 			this.skip( captures )
