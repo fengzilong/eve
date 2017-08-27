@@ -417,7 +417,8 @@ export default class ExpressionParser {
 	}
 
 	private error( err ) {
-		throw new ParserError( err.message, {
+		throw new ParserError( {
+			message: err.message,
 			codeframe: err.codeframe
 		} )
 	}

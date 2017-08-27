@@ -64,11 +64,22 @@ export default class TemplateLexer {
 		this.pos = this.pos + len
 	}
 
-	private error( ...args ) {
-		const codeframe = getCodeFrame( this.source, this.pos )
-		console.error( codeframe )
+	private error( err ) {
+		let message
+		let pos
+
+		if ( typeof err === 'string' ) {
+			message = err
+			pos = this.pos
+		} else {
+			message = err.message
+			pos = typeof err.pos !== 'undefined' ? err.pos : this.pos
+		}
+
+		const codeframe = getCodeFrame( this.source, pos )
 		throw new LexerError( {
-			codeframe,
+			message,
+			codeframe
 		} )
 	}
 

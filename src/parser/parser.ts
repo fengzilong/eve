@@ -89,9 +89,12 @@ export default class TemplateParser {
 
 	private error( err: any ) {
 		if ( typeof err === 'string' ) {
-			throw new ParserError( err )
+			throw new ParserError( {
+				message: err
+			} )
 		} else if ( typeof err === 'object' ) {
-			throw new ParserError( err.message, {
+			throw new ParserError( {
+				message: err.message,
 				codeframe: getCodeFrame( this.source, err.pos )
 			} )
 		}
