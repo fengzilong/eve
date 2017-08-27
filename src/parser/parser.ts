@@ -180,7 +180,7 @@ export default class TemplateParser {
 		const closeToken = this.accept( 'tagClose' )
 		if ( !closeToken || closeToken.value.name !== tagName ) {
 			this.error( {
-				message: `Close tag not found for <${ tagName }>`,
+				message: `Unclosed tag <${ tagName }>`,
 				pos: tagToken.pos + Math.ceil( tagName.length / 2 )
 			} )
 		}
@@ -285,7 +285,7 @@ export default class TemplateParser {
 		// maybe {/each}? it's not what we want
 		if ( !mustacheCloseToken || mustacheCloseToken.value !== 'if' ) {
 			this.error( {
-				message: '{/if} cannot be found',
+				message: 'Unclosed {#if}',
 				pos: ifToken.pos + 2
 			} )
 		}
@@ -319,7 +319,7 @@ export default class TemplateParser {
 		const token = this.accept( 'mustacheClose' )
 		if ( !token || token.value !== 'each' ) {
 			this.error( {
-				message: '{/each} cannot be found',
+				message: 'Unclosed {#each}',
 				pos: eachToken.pos + 2
 			} )
 		}
