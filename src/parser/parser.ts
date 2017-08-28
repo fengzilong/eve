@@ -204,7 +204,7 @@ export default class TemplateParser {
 				return this.include()
 			default:
 				this.error( {
-					message: `Command {#${ token.value } ...} cannot be recoginized`,
+					message: `Unrecoginized Command {#${ token.value } ...}`,
 					pos: token.pos + 2
 				} )
 		}
@@ -305,7 +305,7 @@ export default class TemplateParser {
 		} )
 
 		// TODO: read sequence and item
-		this.expression()
+		const expr = this.expression()
 
 		this.expect( 'mustacheEnd' )
 

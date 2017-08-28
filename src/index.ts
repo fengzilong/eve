@@ -3,36 +3,26 @@ import { watchable } from './watcher'
 import { emitable } from './utils/emitter'
 import createRender from './vdom/render'
 import patch from './vdom/patch'
-import parse from './parser'
+import parse from './parser/index'
 
 export default makeClass(
 	// prototype
 	{
-		onCreated() {}, //abstract
+		created() {}, //abstract
 
-		onMounted() {}, //abstract
+		attached() {}, //abstract
 
-		onDisposed() {}, //abstract
+		detached() {}, //abstract
+
+		disposed() {}, //abstract
 
 		$mount() {
 			this.$update()
-			this.onMounted()
+			this.attached()
 		},
 
 		$unmount() {
-			this.onDisposed()
-		},
-
-		$update() {
-
-		},
-
-		$watch() {
-
-		},
-
-		$unwatch() {
-
+			this.disposed()
 		},
 	},
 
@@ -55,19 +45,23 @@ export default makeClass(
 		},
 	},
 
+	// constructor
 	function () {
 		emitable( this )
 		watchable( this )
 
+		// TODO: new Watcher
+
 		this.data = {}
 
-		this.onCreated()
+		this.created()
 
 		const start = Date.now()
 		console.log( parse( this.template || '' ) )
 		console.log( Date.now() - start )
 
 		const ast = parse( this.template || '' )
+
 		const dependencies = []
 		this.$watch( dependencies )
 
@@ -75,20 +69,14 @@ export default makeClass(
 		const render = createRender( ast )
 
 		this.vdom = null
-		this.$on( 'digestend>ε<', () => {
+		this.$on( 'watcher:digest-end', () => {
+			// collect changed path
 			// TODO: computed
 			const computed = {}
 
-			const newVDOM = render( { ...this.data, ...computed } )
-			patch( this.vdom, newVDOM )
-			this.vdom = newVDOM
+			const vdom = render( { ...this.data, ...computed } )
+			patch( this.vdom, vdom )
+			this.vdom = vdom
 		} )
 	}
 )
-
-function parseTemplate( template: string ): any {
-	return {
-		ast: [],
-		dependencies: []
-	}
-}

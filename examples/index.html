@@ -53,6 +53,10 @@
 					{#if v.length > 5}
 						文字长度不能超过5
 					{/if}
+
+					{#each items as item}
+						{ item + 1 }
+					{/each}
 				`
 				,
 
@@ -61,22 +65,22 @@
 				// -> watchers
 
 				// 实例被创建
-				onCreated() {
+				created() {
 					this.data.v = 9
 				},
 
 				// 被挂载到dom中
-				onMounted() {
+				attached() {
 
 				},
 
 				// 从dom中脱离
-				onUnmounted() {
+				detached() {
 
 				},
 
 				// 被销毁
-				onDisposed() {
+				disposed() {
 
 				},
 			} );
