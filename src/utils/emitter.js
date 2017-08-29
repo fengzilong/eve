@@ -1,9 +1,10 @@
+// @flow
 export { Emitter, emitable }
 
 // ----------------------
 
-interface IStubFunction extends Function {
-	once?: boolean
+type IStubFunction = Function & {
+	once?: boolean,
 	origin?: Function
 }
 
@@ -94,5 +95,5 @@ function emitable( target: any = {} ): void {
 	}
 }
 
-function Emitter() {} // tslint:disable-line
+function Emitter() {}
 emitable( Emitter )

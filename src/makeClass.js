@@ -1,3 +1,5 @@
+// @flow
+
 export default makeClass
 
 // ----------------------
@@ -5,7 +7,7 @@ export default makeClass
 function makeClass(
 	protoProps = {},
 	staticProps = {},
-	target: any = () => {} // tslint:disable-line
+	target = () => {}
 ) {
 	Object.assign( target, staticProps )
 	Object.assign( target.prototype, protoProps )
@@ -15,11 +17,7 @@ function makeClass(
 	return target
 }
 
-interface IRegExp {
-	test( string: string | Function ): boolean
-}
-
-const suprRE = ( /xyz/ as IRegExp ).test( function () { 'xyz' } ) ? /\bsupr\b/ : /.*/
+const suprRE = /xyz/.test( function () { 'xyz' } ) ? /\bsupr\b/ : /.*/
 const hasOwn = Object.prototype.hasOwnProperty
 
 function createExtend( staticProps: Object ): Function {

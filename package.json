@@ -5,44 +5,40 @@
   "scripts": {
     "test": "npm run lint && jest --no-cache",
     "test:watch": "jest --no-cache --watchAll",
-    "dev": "webpack -w",
-    "dist": "webpack",
+    "dev": "bili --watch",
+    "dist": "bili",
     "precommit": "npm test",
-    "lint": "tslint --exclude \"**/__test__/**\" --format codeFrame src/**/*.ts",
-    "prepublish": "webpack"
+    "lint": "eslint src/**/*.js --quiet",
+    "prepublish": "npm run dist"
   },
   "jest": {
     "collectCoverage": true,
     "coverageDirectory": "coverage",
-    "collectCoverageFrom": [ "src/**/*.{ts}" ],
+    "collectCoverageFrom": [
+      "src/**/*.{js}"
+    ],
     "coveragePathIgnorePatterns": [
-        "node_modules",
-        "<rootDir>/src/parser/nodes"
+      "node_modules",
+      "<rootDir>/src/parser/nodes"
     ],
-    "transform": {
-      "^.+\\.(js|ts)$": "typescript-babel-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "testRegex": "/__test__/.*\\.test\\.(js|ts)$"
+    "testRegex": "/__test__/.*\\.test\\.(js)$"
   },
   "author": "fengzilong <fengzilong1992@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.23.1",
-    "babel-jest": "^18.0.0",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.3",
     "babel-loader": "^6.3.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
+    "babel-preset-flow": "^6.23.0",
+    "bili": "^0.17.7",
+    "eslint-plugin-flowtype": "^2.35.0",
     "husky": "^0.13.1",
-    "jest-cli": "^18.1.0",
-    "ts-loader": "^2.0.0",
-    "tslint": "^4.4.2",
-    "typescript": "^2.1.6",
-    "typescript-babel-jest": "^1.0.1",
+    "jest": "^20.0.4",
+    "warning": "^3.0.0",
     "webpack": "^1.14.0"
   }
 }

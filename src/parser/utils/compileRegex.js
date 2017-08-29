@@ -1,3 +1,5 @@
+// @flow
+
 export default map => ( regexp: RegExp = new RegExp( '' ) ) => {
 	map = Object.assign( {}, map )
 	const regStr = regexp.source.replace(

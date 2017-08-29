@@ -1,3 +1,5 @@
+// @flow
+
 export {
 	isFunction,
 	isSVGTag,

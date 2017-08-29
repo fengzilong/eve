@@ -1,10 +1,12 @@
-export default class ParserError extends Error {
-	private codeframe: string
+// @flow
+
+export default class LexerError extends Error {
+	codeframe: string
 
 	constructor( { message = '', codeframe = '' } = {} ) {
 		super()
 
-		this.name = 'ParserError'
+		this.name = 'LexerError'
 		this.message = message
 		this.codeframe = codeframe
 

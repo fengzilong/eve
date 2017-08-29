@@ -1,3 +1,5 @@
+// @flow
+
 import ParserError from './error/ParserError'
 import getCodeFrame from './utils/getCodeFrame'
 import isSelfClosedTag from './utils/isSelfClosedTag'
@@ -15,11 +17,15 @@ function parseExpression( source, tokens ) {
 // ---
 
 export default class TemplateParser {
-	private source: string
-	private options: any
-	private lexer: Lexer
-	private dependencies: string[]
-	private scanned: any[]
+	// --- private ---
+
+	source: string
+	options: any
+	lexer: Lexer
+	dependencies: string[]
+	scanned: any[]
+
+	// --- constructor ---
 
 	constructor( source = '', options = {} ) {
 		this.source = source
@@ -27,7 +33,9 @@ export default class TemplateParser {
 		this.scanned = []
 	}
 
-	public parse( source ) {
+	// --- public ---
+
+	parse( source ) {
 		this.scanned = []
 		this.source = source || this.source
 
@@ -42,32 +50,34 @@ export default class TemplateParser {
 		return program
 	}
 
-	private peek() {
+	// --- private ---
+
+	peek() {
 		return this.lexer.peek()
 	}
 
-	private peekBefore() {
+	peekBefore() {
 		return this.scanned[ this.scanned.length - 1 ]
 	}
 
-	private next() {
+	next() {
 		const token = this.lexer.next()
 		this.scanned.push( token )
 		return token
 	}
 
-	private skip( types ) {
+	skip( types ) {
 		while ( ~types.indexOf( this.peek().type ) ) {
 			this.next()
 		}
 	}
 
-	private skipWhitespace() {
+	skipWhitespace() {
 		this.skip( [ 'whitespace' ] )
 	}
 
 	// quick match, if matched, return
-	private accept( type ) {
+	accept( type ) {
 		const token = this.peek()
 		if ( token.type === type ) {
 			return this.next()
@@ -75,7 +85,7 @@ export default class TemplateParser {
 	}
 
 	// enhanced `this.next()`, with error reporting
-	private expect( type ) {
+	expect( type ) {
 		const token = this.peek()
 		if ( token.type === type ) {
 			return this.next()
@@ -87,7 +97,7 @@ export default class TemplateParser {
 		} )
 	}
 
-	private error( err: any ) {
+	error( err: any ) {
 		if ( typeof err === 'string' ) {
 			throw new ParserError( {
 				message: err
@@ -103,7 +113,7 @@ export default class TemplateParser {
 	// multiple statements, like `text + tag + text`, we should gather them in an array
 	// use eos and tagClose as boundary, when we encounter extra tagClose token
 	// it should be a endpoint for parent invoking
-	private statements() {
+	statements() {
 		const root = []
 		while ( this.peek().type !== 'tagClose' && this.peek().type !== 'eos' ) {
 			this.skipWhitespace()
@@ -121,7 +131,7 @@ export default class TemplateParser {
 	}
 
 	// distribute
-	private statement() {
+	statement() {
 		const token = this.peek()
 
 		switch ( token.type ) {
@@ -147,7 +157,7 @@ export default class TemplateParser {
 		}
 	}
 
-	private text() {
+	text() {
 		let token
 		let str = ''
 
@@ -158,7 +168,7 @@ export default class TemplateParser {
 		return nodes.Text( str )
 	}
 
-	private tag() {
+	tag() {
 		const tagToken = this.next()
 		const tagName = tagToken.value.name
 
@@ -192,7 +202,7 @@ export default class TemplateParser {
 	}
 
 	// {#command expr}{/command}, such as if, list
-	private command() {
+	command() {
 		const token = this.accept( 'mustacheOpen' )
 		switch ( token.value ) {
 			case 'if':
@@ -210,7 +220,7 @@ export default class TemplateParser {
 		}
 	}
 
-	private include() {
+	include() {
 		const node = nodes.Include( {
 			body: this.expression(),
 		} )
@@ -222,7 +232,7 @@ export default class TemplateParser {
 		return node
 	}
 
-	private ['if']() {
+	['if']() {
 		const ifToken = this.peekBefore()
 
 		const node = nodes.If( {
@@ -295,7 +305,7 @@ export default class TemplateParser {
 
 		return node
 	}
-	private each() {
+	each() {
 		const eachToken = this.peekBefore()
 
 		const node = nodes.Each( {
@@ -346,7 +356,7 @@ export default class TemplateParser {
 
 		return node
 	}
-	private expression() {
+	expression() {
 		const tokens = []
 		let token
 
@@ -368,7 +378,7 @@ export default class TemplateParser {
 		} )
 	}
 
-	private interpolation() {
+	interpolation() {
 		this.accept( 'interpolationOpen' )
 
 		const node = this.expression()
@@ -377,4 +387,6 @@ export default class TemplateParser {
 
 		return node
 	}
+
+	// --- private end ---
 }

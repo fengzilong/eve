@@ -1,3 +1,4 @@
+// @flow
 import State from './state'
 import Token from './token'
 import LexerError from './error/LexerError'
@@ -7,15 +8,19 @@ import patterns from './patterns'
 const hasOwn = Object.hasOwnProperty
 
 export default class TemplateLexer {
-	private source: string
-	private rest: string
-	private options: any
-	private stash: any[]
-	private pos: number
-	private marker: {
+	// --- private ---
+
+	source: string
+	rest: string
+	options: any
+	stash: any[]
+	pos: number
+	marker: {
 		brace: number
 	}
-	private state: State
+	state: State
+
+	// --- constructor ---
 
 	constructor( source = '', options = {} ) {
 		this.source = source
@@ -30,7 +35,9 @@ export default class TemplateLexer {
 		this.state.enter( 'data' )
 	}
 
-	public lookahead( n ) {
+	// --- public ---
+
+	lookahead( n ) {
 		let fetch = n - this.stash.length
 		while ( fetch-- > 0 ) {
 			this.stash.push( this.advance() )
@@ -38,33 +45,35 @@ export default class TemplateLexer {
 		return this.stash[ --n ]
 	}
 
-	public peek( n = 1 ) {
+	peek( n = 1 ) {
 		return this.lookahead( n )
 	}
 
-	public next() {
+	next() {
 		return this.stashed() || this.advance()
 	}
 
-	private stashed() {
+	// --- private ---
+
+	stashed() {
 		return this.stash.shift()
 	}
 
-	private match( type ) {
+	match( type ) {
 		if ( !patterns[ type ] ) {
 			return
 		}
 		return patterns[ type ].exec( this.rest )
 	}
 
-	private skip( len ) {
+	skip( len ) {
 		const chunk = len[ 0 ]
 		len = chunk ? chunk.length : len
 		this.rest = this.rest.substr( len )
 		this.pos = this.pos + len
 	}
 
-	private error( err ) {
+	error( err ) {
 		let message
 		let pos
 
@@ -83,7 +92,7 @@ export default class TemplateLexer {
 		} )
 	}
 
-	private advance() {
+	advance() {
 		const startPos = this.pos
 
 		const token =
@@ -111,7 +120,7 @@ export default class TemplateLexer {
 		return token
 	}
 
-	private comment() {
+	comment() {
 		const captures = this.match( 'TAG_COMMENT' )
 		if ( captures ) {
 			this.skip( captures )
@@ -119,7 +128,7 @@ export default class TemplateLexer {
 			return new Token( 'comment', { content } )
 		}
 	}
-	private tagOpen() {
+	tagOpen() {
 		const captures = this.match( 'TAG_OPEN' )
 		if ( captures ) {
 			this.skip( captures )
@@ -128,7 +137,7 @@ export default class TemplateLexer {
 			return new Token( 'tagOpen', { name } )
 		}
 	}
-	private attribute() {
+	attribute() {
 		if ( !this.state.is( 'tagOpen' ) ) {
 			return
 		}
@@ -142,7 +151,7 @@ export default class TemplateLexer {
 			return new Token( 'attribute', { name, value } )
 		}
 	}
-	private tagEnd() {
+	tagEnd() {
 		if ( this.state.is( 'mustacheOpen' ) ) {
 			return
 		}
@@ -157,7 +166,7 @@ export default class TemplateLexer {
 			} )
 		}
 	}
-	private tagClose() {
+	tagClose() {
 		const captures = this.match( 'TAG_CLOSE' )
 		if ( captures ) {
 			this.skip( captures )
@@ -168,7 +177,7 @@ export default class TemplateLexer {
 		}
 	}
 	// mustache
-	private mustacheOpen() {
+	mustacheOpen() {
 		const captures = this.match( 'MUSTACHE_OPEN' )
 		if ( captures ) {
 			const name = captures[ 1 ]
@@ -177,7 +186,7 @@ export default class TemplateLexer {
 			return new Token( 'mustacheOpen', name )
 		}
 	}
-	private mustacheEnd() {
+	mustacheEnd() {
 		if ( !this.state.is( 'mustacheOpen' ) ) {
 			return
 		}
@@ -196,7 +205,7 @@ export default class TemplateLexer {
 			return new Token( 'mustacheEnd' )
 		}
 	}
-	private mustacheClose() {
+	mustacheClose() {
 		const captures = this.match( 'MUSTACHE_CLOSE' )
 		if ( captures ) {
 			const name = captures[ 1 ]
@@ -205,7 +214,7 @@ export default class TemplateLexer {
 		}
 	}
 	// interpolation
-	private interpolationOpen() {
+	interpolationOpen() {
 		// skip when staying in tagOpen and mustacheOpen state
 		if ( this.state.is( 'tagOpen' ) || this.state.is( 'mustacheOpen' ) ) {
 			return
@@ -219,7 +228,7 @@ export default class TemplateLexer {
 		}
 	}
 
-	private expression() {
+	expression() {
 		if ( !this.state.is( 'mustacheOpen' ) ) {
 			return
 		}
@@ -232,7 +241,7 @@ export default class TemplateLexer {
 			this.brace()
 		)
 	}
-	private ident() {
+	ident() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_IDENT' )
 		if ( captures ) {
 			this.skip( captures )
@@ -240,7 +249,7 @@ export default class TemplateLexer {
 			return new Token( 'ident', ident )
 		}
 	}
-	private number() {
+	number() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_NUMBER' )
 		if ( captures ) {
 			this.skip( captures )
@@ -248,7 +257,7 @@ export default class TemplateLexer {
 			return new Token( 'number', parseFloat( number ) )
 		}
 	}
-	private string() {
+	string() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_STRING' )
 		if ( captures ) {
 			this.skip( captures )
@@ -256,7 +265,7 @@ export default class TemplateLexer {
 			return new Token( 'string', string )
 		}
 	}
-	private symbol() {
+	symbol() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_SYMBOL' )
 		if ( captures ) {
 			this.skip( captures )
@@ -265,10 +274,10 @@ export default class TemplateLexer {
 		}
 	}
 	// { | }
-	private brace() {
+	brace() {
 		return this.braceOpen() || this.braceEnd()
 	}
-	private braceOpen() {
+	braceOpen() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_BRACE_OPEN' )
 		if ( captures ) {
 			this.skip( captures )
@@ -277,7 +286,7 @@ export default class TemplateLexer {
 			return new Token( 'symbol', symbol )
 		}
 	}
-	private braceEnd() {
+	braceEnd() {
 		const captures = this.match( 'MUSTACHE_EXPRESSION_BRACE_END' )
 		if ( captures ) {
 			const symbol = captures[ 1 ]
@@ -298,7 +307,7 @@ export default class TemplateLexer {
 		}
 	}
 
-	private text() {
+	text() {
 		const captures = this.match( 'TEXT' )
 		if ( captures ) {
 			if ( this.state.is( 'tagOpen' ) || this.state.is( 'expressionOpen' ) ) {
@@ -311,7 +320,7 @@ export default class TemplateLexer {
 		}
 	}
 
-	private whitespace() {
+	whitespace() {
 		const captures = this.match( 'WHITESPACE' )
 		if ( captures ) {
 			this.skip( captures )
@@ -320,7 +329,7 @@ export default class TemplateLexer {
 		}
 	}
 
-	private eos() {
+	eos() {
 		if ( this.rest.length > 0 ) {
 			return
 		}

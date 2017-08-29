@@ -1,12 +1,17 @@
+// @flow
 import ParserError from './error/ParserError'
 import getCodeFrame from './utils/getCodeFrame'
 
 export default class ExpressionParser {
-	private source: string
-	private tokens: any[]
-	private markers: { parenthesis: number }
+	// --- private ---
 
-	public parse( source = '', tokens = [] ) {
+	source: string
+	tokens: any[]
+	markers: { parenthesis: number }
+
+	// --- public ---
+
+	parse( source = '', tokens = [] ) {
 		this.source = source
 		this.tokens = tokens
 		this.markers = {
@@ -16,9 +21,11 @@ export default class ExpressionParser {
 		return this.ternary()
 	}
 
+	// --- private ---
+
 	// logicalOr ? ternary : ternary
 	// logicalOr
-	private ternary() {
+	ternary() {
 		const test = this.logicalOr()
 
 		if ( this.accept( '?' ) ) {
@@ -38,7 +45,7 @@ export default class ExpressionParser {
 	}
 
 	// logicalAnd || logicalOr
-	private logicalOr() {
+	logicalOr() {
 		const and = this.logicalAnd()
 
 		if ( this.accept( '||' ) ) {
@@ -55,7 +62,7 @@ export default class ExpressionParser {
 
 	// relational && logicalAnd
 	// relational
-	private logicalAnd() {
+	logicalAnd() {
 		const relational = this.relational()
 
 		if ( this.accept( '&&' ) ) {
@@ -79,7 +86,7 @@ export default class ExpressionParser {
 	// additive === relational
 	// additive !== relational
 	// additive
-	private relational() {
+	relational() {
 		const left = this.additive()
 
 		let token
@@ -122,7 +129,7 @@ export default class ExpressionParser {
 	// multiplicative + additive
 	// multiplicative - additive
 	// multiplicative
-	private additive() {
+	additive() {
 		const left = this.multiplicative()
 
 		let token
@@ -144,7 +151,7 @@ export default class ExpressionParser {
 	// unary % multiplicative
 	// unary ^ multiplicative
 	// unary
-	private multiplicative() {
+	multiplicative() {
 		const left = this.unary()
 
 		let token
@@ -174,7 +181,7 @@ export default class ExpressionParser {
 	// !number
 	// string
 	// number
-	private unary() {
+	unary() {
 		let token
 
 		if ( token = this.accept( '!' ) || this.accept( '~' ) ) {
@@ -197,7 +204,7 @@ export default class ExpressionParser {
 	// primary.ident( arguments )
 	// primary.ident|number
 	// primary
-	private member( paths?: any[] ) {
+	member( paths?: any[] ) {
 		if ( !paths ) {
 			// only read primary as start point
 			let primary = this.primary()
@@ -243,7 +250,7 @@ export default class ExpressionParser {
 	}
 
 	// ternary[, ternary ]...
-	private arguments() {
+	arguments() {
 		let token
 		let ternary
 
@@ -275,7 +282,7 @@ export default class ExpressionParser {
 	// array
 	// string
 	// number
-	private primary() {
+	primary() {
 		const token = this.peek()
 
 		if ( !token ) {
@@ -304,7 +311,7 @@ export default class ExpressionParser {
 	}
 
 	// { ident|string|number: ternary [,ident|string|number: ternary]* }
-	private object() {
+	object() {
 		const properties = []
 
 		this.accept( '{' )
@@ -336,7 +343,7 @@ export default class ExpressionParser {
 	}
 
 	// [ primary [,primary]* ]
-	private array() {
+	array() {
 		const elements = []
 
 		this.accept( '[' )
@@ -364,7 +371,7 @@ export default class ExpressionParser {
 	}
 
 	// ( ternary )
-	private parenthesis() {
+	parenthesis() {
 		let ternary
 
 		if ( this.accept( '(' ) ) {
@@ -377,15 +384,15 @@ export default class ExpressionParser {
 		return ternary
 	}
 
-	private peek( n = 1 ) {
+	peek( n = 1 ) {
 		return this.tokens[ --n ]
 	}
 
-	private next() {
+	next() {
 		return this.tokens.shift()
 	}
 
-	private acceptMany( types ) {
+	acceptMany( types ) {
 		if ( !Array.isArray( types ) ) {
 			types = [ types ]
 		}
@@ -408,14 +415,14 @@ export default class ExpressionParser {
 		return matchedTokens
 	}
 
-	private accept( type ) {
+	accept( type ) {
 		const token = this.peek()
 		if ( isTokenAcceptable( token, type ) ) {
 			return this.next()
 		}
 	}
 
-	private expect( type ) {
+	expect( type ) {
 		const token = this.peek()
 		if ( isTokenAcceptable( token, type ) ) {
 			return this.next()
@@ -429,7 +436,7 @@ export default class ExpressionParser {
 		} )
 	}
 
-	private error( err ) {
+	error( err ) {
 		throw new ParserError( {
 			message: err.message,
 			codeframe: err.codeframe

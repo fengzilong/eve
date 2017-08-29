@@ -1,6 +1,10 @@
+// @flow
+
 import makeClass from './makeClass'
 import { Watcher } from './watcher'
 import { emitable } from './utils/emitter'
+import warning from './utils/warning'
+import callHook from './utils/callHook'
 import createRender from './vdom/render'
 import patch from './vdom/patch'
 import parse from './parser/index'
@@ -8,33 +12,32 @@ import parse from './parser/index'
 export default makeClass(
 	// prototype
 	{
-		created() {}, //abstract
+		$mount( el ) {
+			if ( typeof el === 'string' ) {
+				this.$el = document.querySelector( el )
+			}
 
-		attached() {}, //abstract
+			warning( this.$el, `mount node is not found` )
 
-		detached() {}, //abstract
-
-		disposed() {}, //abstract
-
-		$mount() {
 			this.$update()
-			this.attached()
+
+			callHook( this, 'attached' )
 		},
 
 		$unmount() {
-			this.disposed()
+			callHook( this, 'disposed' )
 		},
 
-		get $watch() {
-			return this._watcher.$watch.bind( this._watcher )
+		$watch( ...args ) {
+			return this._watcher.$watch( ...args )
 		},
 
-		get $unwatch() {
-			return this._watcher.$unwatch.bind( this._watcher )
+		$unwatch( ...args ) {
+			return this._watcher.$unwatch( ...args )
 		},
 
-		get $update() {
-			return this._watcher.$update.bind( this._watcher )
+		$update( ...args ) {
+			return this._watcher.$update( ...args )
 		}
 	},
 
@@ -77,7 +80,7 @@ export default makeClass(
 				// TODO: computed
 				const computed = {}
 
-				const vdom = render( { ...this.data, ...computed } )
+				const vdom = render( Object.assign( {}, this.data, computed ) )
 				patch( this.vdom, vdom )
 				this.vdom = vdom
 			}
@@ -86,6 +89,6 @@ export default makeClass(
 		const dependencies = []
 		this._watcher.$watch( dependencies )
 
-		this.created()
+		callHook( this, 'created' )
 	}
 )

@@ -1,3 +1,5 @@
+// @flow
+
 /* tslint:disable */
 
 import uid from './utils/uid'
@@ -6,11 +8,11 @@ export { Watcher, watchable }
 
 // ---------------------
 
-interface WO {
-	id: string
-	path: string
-	observer: Function
-	get: Function
+type WO = {
+	id: string,
+	path: string,
+	observer: Function,
+	get: Function,
 	last: any
 }
 

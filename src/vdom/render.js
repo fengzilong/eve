@@ -1,3 +1,5 @@
+// @flow
+
 import traverse from './traverse'
 // visitors
 import element from './visitors/element'

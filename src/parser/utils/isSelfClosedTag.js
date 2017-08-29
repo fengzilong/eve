@@ -1,3 +1,5 @@
+// @flow
+
 const SELF_CLOSED_TAGS: string[] = (
 	'area,base,br,col,embed,hr,' +
 	'img,input,keygen,link,menuitem,' +

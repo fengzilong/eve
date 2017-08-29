@@ -1,20 +1,22 @@
+// @flow
+
 // https://gitlab.com/Rich-Harris/locate-character
 
-interface Options {
-	offsetLine?: number
-	offsetColumn?: number
+type Options = {
+	offsetLine?: number,
+	offsetColumn?: number,
 	startIndex?: number
 }
 
-interface Range {
-	start: number
-	end: number
+type Range = {
+	start: number,
+	end: number,
 	line: number
 }
 
-interface Location {
-	line: number
-	column: number
+type Location = {
+	line: number,
+	column: number,
 	character: number
 }
 
@@ -43,9 +45,9 @@ export function getLocator ( source: string, options: Options = {} ) {
 		return { line: offsetLine + range.line, column: offsetColumn + index - range.start, character: index }
 	}
 
-	function locate ( search: string, startIndex?: number ): Location
-	function locate ( search: number ): Location
-	function locate ( search: any, startIndex?: number ): Location {
+	// function locate ( search: string, startIndex?: number ): Location
+	// function locate ( search: any, startIndex?: number ): Location
+	function locate ( search: number ): Location {
 		if ( typeof search === 'string' ) {
 			search = source.indexOf( search, startIndex || 0 )
 		}
@@ -64,15 +66,3 @@ export function getLocator ( source: string, options: Options = {} ) {
 
 	return locate
 }
-
-function locate ( source: string, search: string, options?: Options ): Location
-function locate ( source: string, search: number, options?: Options ): Location
-function locate ( source: string, search: any, options?: Options ): Location {
-	if ( typeof options === 'number' ) {
-		throw new Error( 'locate takes a { startIndex, offsetLine, offsetColumn } object as the third argument' )
-	}
-
-	return getLocator( source, options )( search, options && options.startIndex )
-}
-
-export { locate }

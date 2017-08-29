@@ -1,3 +1,5 @@
+// @flow
+
 // https://github.com/rollup/rollup/blob/master/src/utils/getCodeFrame.js
 
 import { getLocator } from './locateCharacter'

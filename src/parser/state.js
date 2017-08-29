@@ -1,15 +1,22 @@
+// @flow
 export default class State {
-	private _: string[]
+	// --- private ---
+
+	_: string[]
+
+	// --- constructor ---
 
 	constructor() {
 		this._ = []
 	}
 
-	public enter( state ) {
+	// --- public ---
+
+	enter( state ) {
 		this._.push( state )
 	}
 
-	public leave( state ) {
+	leave( state ) {
 		if ( !state ) {
 			return this._.pop()
 		}
@@ -19,11 +26,11 @@ export default class State {
 		}
 	}
 
-	public last() {
+	last() {
 		return this._[ this._.length - 1 ]
 	}
 
-	public is( state ) {
+	is( state ) {
 		return this.last() === state
 	}
 }
