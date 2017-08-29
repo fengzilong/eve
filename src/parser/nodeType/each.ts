@@ -1,4 +1,4 @@
-export default function ( { sequence = '', item = '', body = [] } ) {
+export default function ( { sequence = {}, item = '', body = [] } ) {
 	return {
 		type: 'EachStatement',
 		sequence,

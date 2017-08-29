@@ -1,5 +1,5 @@
 import makeClass from './makeClass'
-import { watchable } from './watcher'
+import { Watcher } from './watcher'
 import { emitable } from './utils/emitter'
 import createRender from './vdom/render'
 import patch from './vdom/patch'
@@ -24,6 +24,18 @@ export default makeClass(
 		$unmount() {
 			this.disposed()
 		},
+
+		get $watch() {
+			return this._watcher.$watch.bind( this._watcher )
+		},
+
+		get $unwatch() {
+			return this._watcher.$unwatch.bind( this._watcher )
+		},
+
+		get $update() {
+			return this._watcher.$update.bind( this._watcher )
+		}
 	},
 
 	// static
@@ -48,35 +60,32 @@ export default makeClass(
 	// constructor
 	function () {
 		emitable( this )
-		watchable( this )
-
-		// TODO: new Watcher
-
-		this.data = {}
-
-		this.created()
-
-		const start = Date.now()
-		console.log( parse( this.template || '' ) )
-		console.log( Date.now() - start )
 
 		const ast = parse( this.template || '' )
 
-		const dependencies = []
-		this.$watch( dependencies )
+		console.log( ast )
 
 		// create render function for following rendering
 		const render = createRender( ast )
 
+		this.data = {}
 		this.vdom = null
-		this.$on( 'watcher:digest-end', () => {
-			// collect changed path
-			// TODO: computed
-			const computed = {}
+		this._watcher = new Watcher( {
+			context: this,
+			onUpdate: () => {
+				// collect changed path
+				// TODO: computed
+				const computed = {}
 
-			const vdom = render( { ...this.data, ...computed } )
-			patch( this.vdom, vdom )
-			this.vdom = vdom
+				const vdom = render( { ...this.data, ...computed } )
+				patch( this.vdom, vdom )
+				this.vdom = vdom
+			}
 		} )
+
+		const dependencies = []
+		this._watcher.$watch( dependencies )
+
+		this.created()
 	}
 )

@@ -101,6 +101,19 @@ export default class ExpressionParser {
 				left,
 				right: this.relational()
 			}
+		} else if ( token = this.accept( 'ident' ) ) {
+			switch ( token.value ) {
+				case 'in':
+				case 'as':
+					return {
+						type: 'binary',
+						op: token.value,
+						left,
+						right: this.relational()
+					}
+				default:
+					// skip
+			}
 		}
 
 		return left

@@ -70,5 +70,5 @@ function watchable( target: any = {} ): void {
 	}
 }
 
-function Watcher() {}
+function Watcher( { context: any, onUpdate: Function } ) {}
 watchable( Watcher )

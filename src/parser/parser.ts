@@ -307,6 +307,23 @@ export default class TemplateParser {
 		// TODO: read sequence and item
 		const expr = this.expression()
 
+		if ( expr.body.op !== 'as' ) {
+			this.error( {
+				message: `Expect 'as' expression`
+			} )
+		}
+
+		if ( expr.body.right.type === 'ident' ) {
+			node.sequence = nodes.Expression( {
+				body: expr.body.left
+			} )
+			node.item = expr.body.right.value
+		} else {
+			this.error( {
+				message: `Expect right value in 'as' expression to be simple ident`
+			} )
+		}
+
 		this.expect( 'mustacheEnd' )
 
 		function receive( statement ) {
