@@ -7,17 +7,12 @@ export default class ExpressionParser {
 
 	source: string
 	tokens: any[]
-	markers: { parenthesis: number }
 
 	// --- public ---
 
 	parse( source = '', tokens = [] ) {
 		this.source = source
 		this.tokens = tokens
-		this.markers = {
-			parenthesis: 0
-		}
-
 		return this.ternary()
 	}
 
