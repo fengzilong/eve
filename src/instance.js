@@ -1,5 +1,5 @@
+import callHook from './core/callHook'
 import warning from './utils/warning'
-import callHook from './utils/callHook'
 
 const instance = {
 	$mount( el ) {

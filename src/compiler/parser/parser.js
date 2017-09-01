@@ -42,12 +42,7 @@ export default class TemplateParser {
 		// setup lexer
 		this.lexer = new Lexer( this.source, this.options )
 
-		// generate program node as ast root
-		const program = nodes.Program( {
-			body: this.statements(),
-		} )
-
-		return program
+		return this.statements()
 	}
 
 	// --- private ---
@@ -184,14 +179,17 @@ export default class TemplateParser {
 		const tagEndToken = this.expect( 'tagEnd' )
 
 		// ends with `/>` or matches self-closed tags defined in w3c
-		if ( tagEndToken.value.isSelfClosed || isSelfClosedTag( tagName ) ) {
+		if ( tagEndToken.value.isSelfClosed ) {
 			return node
 		}
 
 		node.children = this.statements() || []
 
 		const closeToken = this.accept( 'tagClose' )
-		if ( !closeToken || closeToken.value.name !== tagName ) {
+		if (
+			!isSelfClosedTag( tagName ) &&
+			( !closeToken || closeToken.value.name !== tagName )
+		) {
 			this.error( {
 				message: `Unclosed tag <${ tagName }>`,
 				pos: tagToken.pos + Math.ceil( tagName.length / 2 )
@@ -209,9 +207,6 @@ export default class TemplateParser {
 				return this.if()
 			case 'each':
 				return this.each()
-			case 'inc':
-			case 'include':
-				return this.include()
 			default:
 				this.error( {
 					message: `Unrecoginized Command {#${ token.value } ...}`,
@@ -220,25 +215,13 @@ export default class TemplateParser {
 		}
 	}
 
-	include() {
-		const node = nodes.Include( {
-			body: this.expression(),
-		} )
-
-		this.skipWhitespace()
-
-		this.expect( 'mustacheEnd' )
-
-		return node
-	}
-
 	['if']() {
 		const ifToken = this.peekBefore()
 
-		const node = nodes.If( {
+		const node = nodes.IfStatement( {
 			test: this.expression(), // match expression as `test`
-			consequent: null, // set it later
-			alternate: null, // set it later
+			consequent: [], // set it later
+			alternate: [], // set it later
 		} )
 
 		// for BlockStatement
@@ -259,7 +242,7 @@ export default class TemplateParser {
 		} )()
 
 		// obviously consequent will be default receiver at first, until we meet `else`
-		changeReceiver( node.consequent = [] )
+		changeReceiver( node.consequent )
 
 		// expect a mustacheEnd
 		this.accept( 'mustacheEnd' )
@@ -282,7 +265,7 @@ export default class TemplateParser {
 						// now receiver is changed to alternate
 						this.next()
 						this.accept( 'mustacheEnd' )
-						changeReceiver( node.alternate = [] )
+						changeReceiver( node.alternate )
 						break
 					default:
 						receive( this.statement() )
@@ -308,7 +291,7 @@ export default class TemplateParser {
 	each() {
 		const eachToken = this.peekBefore()
 
-		const node = nodes.Each( {
+		const node = nodes.EachStatement( {
 			sequence: null,
 			item: null,
 			body: [],

@@ -1,19 +1,7 @@
-import Tag from './tag'
-import If from './if'
-import Each from './each'
-import Slot from './slot'
-import Expression from './expression'
+import IfStatement from './IfStatement'
+import EachStatement from './EachStatement'
+import Tag from './Tag'
+import Expression from './Expression'
 import Text from './text'
-import Include from './include'
-import Program from './program'
 
-export default {
-	Tag,
-	If,
-	Each,
-	Include,
-	Slot,
-	Expression,
-	Text,
-	Program,
-}
+export default { Tag, IfStatement, EachStatement, Expression, Text }

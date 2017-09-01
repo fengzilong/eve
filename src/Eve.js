@@ -1,7 +1,7 @@
 import Watcher from './core/Watcher'
 import Emitter from './core/Emitter'
-import callHook from './utils/callHook'
-import compile from './compiler/compile'
+import callHook from './core/callHook'
+import compile from './compiler'
 import patch from './vdom/patch'
 
 export default Eve
@@ -14,9 +14,19 @@ class Eve extends Emitter {
 	constructor() {
 		super()
 
-		this.data = typeof this.data === 'function' ? this.data() : {}
-		this._render = compile( this.template || '' )
-		this._watcher = initWatcher( { context: this } )
+		// init data
+		const empty = Object.create( null )
+		this.data = typeof this.data === 'function' ? this.data( empty ) : empty
+
+		// compile template to render function
+		const { render, dependencies } = compile( this.template || '' )
+		this._render = render
+		this._dependencies = dependencies
+
+		// watch data changes
+		const watcher = new Watcher( { context: this, dependencies } )
+		watcher.$watch( this._build.bind( this ) )
+		this._watcher = watcher
 
 		callHook( this, 'created' )
 	}
@@ -26,12 +36,4 @@ class Eve extends Emitter {
 	_build() {
 
 	}
-}
-
-function initWatcher ( { context } ) {
-	const watcher = new Watcher( { context } )
-
-	watcher.$watch( context.dependencies, context._build.bind( context ) )
-
-	return watcher
 }

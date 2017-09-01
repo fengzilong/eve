@@ -1,6 +1,6 @@
 export default function ( { name = '', attributes = {}, children = [], isSelfClosed = false } ) {
 	return {
-		type: 'tag',
+		type: 'Tag',
 		name,
 		attributes,
 		children,

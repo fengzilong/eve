@@ -1,7 +1,7 @@
 const pkg = require( './package.json' );
 
 module.exports = {
-	format: 'all',
+	format: 'umd',
 	compress: true,
 	moduleName: 'Eve',
 	banner: {

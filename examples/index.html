@@ -9,26 +9,39 @@
 
 		<script type="text/javascript" src="../dist/eve.js"></script>
 		<script type="text/javascript">
-		`
-		{#if !helper[ a + b ](v)}
-			<slot name="title"></slot>
+			`
+			{#if !helper[ a + b ](v)}
+				<slot name="title"></slot>
 
+				{ v + 1 && k ? '' : helper( helper( v ) ) }
+
+				<div>
+					abc
+					{#inc content }
+					def
+				</div>
+
+				<div @click="{ onClick($e) }"></div>
+			{/if}
+
+			{ a[ 1 + b * 2 ].b && c + 1 }
+			{#if !helper[ a + b ](v)}{/if}
 			{ v + 1 && k ? '' : helper( helper( v ) ) }
+			`;
 
-			<div>
-				abc
-				{#inc content }
-				def
-			</div>
+			`
+			<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
+			<input :value="{ v }" @keyup.enter="{ onEnter() }" />
 
-			<div @click="{ onClick($e) }"></div>
-		{/if}
+			{#if v[b.c].length > 5}
+				文字长度不能超过5
+			{/if}
 
-		{ a[ 1 + b * 2 ].b && c + 1 }
-		{#if !helper[ a + b ](v)}{/if}
-		{ v + 1 && k ? '' : helper( helper( v ) ) }
-		`;
-			const Button = Eve.extend( {
+			{#each items + 1 as item}
+				{ item + 1 }
+			{/each}
+			`;
+			const App = Eve.extend( {
 				data() {
 					return {
 						a: 1
@@ -53,22 +66,25 @@
 				},
 				template:
 				`
-					<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
-					<input :value="{ v }" @keyup.enter="{ onEnter() }" />
+					<div>
+						{#if aaa}
+							<input type="text">Primary</input>
+						{/if}
+						{#if aaa}
+							<input type="number">Outline</input>
+						{/if}
 
-					{#if v[b.c].length > 5}
-						文字长度不能超过5
-					{/if}
-
-					{#each items + 1 as item}
-						{ item + 1 }
-					{/each}
+						{#each items as a}
+							<div class="eve">
+								child1
+							</div>
+							<div class="eve" ref="v">
+								child2
+							</div>
+						{/each}
+					</div>
 				`
 				,
-
-				// $$render() {};
-				// $$paths: [],
-				// -> watchers
 
 				// 实例被创建
 				created() {
@@ -91,17 +107,17 @@
 				},
 			} );
 
-			console.log( '---\nButton' );
-			console.dir( Button );
+			console.log( '---\nApp' );
+			console.dir( App );
 			console.log( '---' );
 
-			const button = new Button();
+			const app = new App();
 
-			console.log( '---\nbutton' );
-			console.log( button );
+			console.log( '---\napp' );
+			console.log( app );
 			console.log( '---' );
 
-			button.$mount( '#app' );
+			app.$mount( '#app' );
 		</script>
 	</body>
 </html>
