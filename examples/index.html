@@ -7,7 +7,7 @@
 	<body>
 		<div id="app"></div>
 
-		<script type="text/javascript" src="../dist/pulse.js"></script>
+		<script type="text/javascript" src="../dist/eve.js"></script>
 		<script type="text/javascript">
 		`
 		{#if !helper[ a + b ](v)}
@@ -28,7 +28,12 @@
 		{#if !helper[ a + b ](v)}{/if}
 		{ v + 1 && k ? '' : helper( helper( v ) ) }
 		`;
-			const Button = Pulse.extend( {
+			const Button = Eve.extend( {
+				data() {
+					return {
+						a: 1
+					}
+				},
 				computed: {
 
 				},
@@ -50,7 +55,7 @@
 					<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
 					<input :value="{ v }" @keyup.enter="{ onEnter() }" />
 
-					{#if v.length > 5}
+					{#if v[b.c].length > 5}
 						文字长度不能超过5
 					{/if}
 
@@ -66,7 +71,7 @@
 
 				// 实例被创建
 				created() {
-					this.data.v = 9
+
 				},
 
 				// 被挂载到dom中

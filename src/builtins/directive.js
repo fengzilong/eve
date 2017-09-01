@@ -1,6 +1,4 @@
-export default {
-	// 使用具体的钩子，便于控制，由用户自己使用$watch，加了vdom后更新的时机不好把握
-	// 必要时需要更新对应的vnode
+export const hide = {
 	updated( el, binding ) {
 		if ( binding.value !== binding.oldValue ) {
 			if ( binding.value ) {

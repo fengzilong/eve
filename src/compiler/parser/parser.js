@@ -247,7 +247,7 @@ export default class TemplateParser {
 
 			function receive( statement ) {
 				if ( statement ) {
-					receiver.body.push( statement )
+					receiver.push( statement )
 				}
 			}
 
@@ -259,7 +259,7 @@ export default class TemplateParser {
 		} )()
 
 		// obviously consequent will be default receiver at first, until we meet `else`
-		changeReceiver( ( node.consequent = nodes.Block() ) )
+		changeReceiver( node.consequent = [] )
 
 		// expect a mustacheEnd
 		this.accept( 'mustacheEnd' )
@@ -282,7 +282,7 @@ export default class TemplateParser {
 						// now receiver is changed to alternate
 						this.next()
 						this.accept( 'mustacheEnd' )
-						changeReceiver( ( node.alternate = nodes.Block() ) )
+						changeReceiver( node.alternate = [] )
 						break
 					default:
 						receive( this.statement() )

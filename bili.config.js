@@ -3,13 +3,16 @@ const pkg = require( './package.json' );
 module.exports = {
 	format: 'all',
 	compress: true,
-	moduleName: 'Pulse',
+	moduleName: 'Eve',
 	banner: {
-		name: 'Pulse',
+		name: 'Eve',
 		version: pkg.version,
 		author: 'fengzilong',
 		license: 'MIT',
 		year: new Date().getFullYear()
+	},
+	replace: {
+		VERSION: JSON.stringify( pkg.version ),
 	},
 	env: {
 		NODE_ENV: 'development'

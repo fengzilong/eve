@@ -19,6 +19,8 @@ export default class Disposable {
 	add( target: IDisposable ) {
 		if ( this._canDispose( target ) ) {
 			this._stash.push( target )
+		} else {
+			console.warn( `target isn't disposable`, target );
 		}
 	}
 

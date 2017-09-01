@@ -1,7 +1,7 @@
 {
-  "name": "pulse",
-  "version": "0.1.0",
-  "main": "lib/index.js",
+  "name": "@before/eve",
+  "version": "0.0.0",
+  "main": "dist/eve.js",
   "scripts": {
     "test": "npm run lint && jest --no-cache",
     "test:watch": "jest --no-cache --watchAll",

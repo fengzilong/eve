@@ -1,5 +1,6 @@
 // @flow
+import diff from './diff'
 
-export default function ( oldVDOM: any, newVDOM: any ) {
+export default function ( vnode, oldVnode, parent ) {
 
 }

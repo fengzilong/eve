@@ -1,7 +1,4 @@
 // @flow
-
-/* tslint:disable */
-
 import uid from './utils/uid'
 
 export { Watcher, watchable }
