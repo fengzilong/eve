@@ -12,6 +12,8 @@ class Eve extends Emitter {
 	// --- constructor ---
 
 	constructor() {
+		super()
+
 		this.data = typeof this.data === 'function' ? this.data() : {}
 		this._render = compile( this.template || '' )
 		this._watcher = initWatcher( { context: this } )
