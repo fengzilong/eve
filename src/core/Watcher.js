@@ -1,7 +1,8 @@
 // @flow
-import uid from './utils/uid'
+import uniqueId from '../utils/uniqueId'
 
-export { Watcher, watchable }
+export default Watcher
+export { watchable }
 
 // ---------------------
 
@@ -27,7 +28,7 @@ function createMethods() {
 		},
 		_watchOne( path: string, observer: Function ): WO {
 			const watcher: WO = {
-				id: uid(),
+				id: uniqueId(),
 				path: path,
 				observer: observer,
 				get: function () {},

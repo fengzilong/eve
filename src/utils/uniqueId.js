@@ -1,10 +1,10 @@
-export default uid
+export default uniqueId
 
 // ----------------
 
 const prefix = '(>ε<)'
 let id = 0
 
-function uid() {
+function uniqueId() {
 	return `${ prefix }_${ id++ }`
 }

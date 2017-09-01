@@ -1,12 +1,17 @@
 // @flow
-type IDisposable = {
+
+export default CompositeDisposable
+
+// ---
+
+type ICompositeDisposable = {
 	dispose: Function
 }
 
-export default class Disposable {
+class CompositeDisposable {
 	// --- private ---
 
-	_stash: IDisposable[]
+	_stash: ICompositeDisposable[]
 
 	// --- constructor ---
 
@@ -16,7 +21,7 @@ export default class Disposable {
 
 	// --- public ---
 
-	add( target: IDisposable ) {
+	add( target: ICompositeDisposable ) {
 		if ( this._canDispose( target ) ) {
 			this._stash.push( target )
 		} else {
@@ -24,7 +29,7 @@ export default class Disposable {
 		}
 	}
 
-	remove( target: IDisposable ) {
+	remove( target: ICompositeDisposable ) {
 		if ( this._canDispose( target ) ) {
 			this._stash = this._stash
 				.filter( ( disposable ) => disposable !== target )

@@ -1,5 +1,6 @@
 // @flow
-export { Emitter, emitable }
+export default Emitter
+export { emitable }
 
 // ----------------------
 

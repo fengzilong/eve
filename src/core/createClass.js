@@ -1,9 +1,9 @@
 // @flow
-export default makeClass
+export default createClass
 
 // ----------------------
 
-function makeClass(
+function createClass(
 	protoProps = {},
 	staticProps = {},
 	target = () => {}

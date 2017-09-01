@@ -1,4 +1,4 @@
-import makeClass from '../makeClass'
+import makeClass from '../createClass'
 
 test( 'should have extend and implement', () => {
 	const Foo = makeClass()

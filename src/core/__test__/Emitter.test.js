@@ -1,4 +1,4 @@
-import { Emitter, emitable } from '../emitter'
+import Emitter, { emitable } from '../Emitter'
 
 test( 'Emitter $on and $emit', () => {
 	const emitter = new Emitter()

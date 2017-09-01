@@ -1,10 +1,10 @@
 // @flow
-import makeClass from './makeClass'
+import createClass from './core/createClass'
 import Eve from './Eve'
 import instance from './instance'
 import statics from './statics'
 
-export default makeClass( instance, statics, Eve )
+export default createClass( instance, statics, Eve )
 
 // ---
 

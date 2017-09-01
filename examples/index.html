@@ -34,6 +34,7 @@
 						a: 1
 					}
 				},
+				props: [ 'text', 'color' ],
 				computed: {
 
 				},
@@ -71,28 +72,34 @@
 
 				// 实例被创建
 				created() {
-
+					console.log( 'I am created' );
 				},
 
 				// 被挂载到dom中
 				attached() {
-
+					console.log( 'I am attached' );
 				},
 
 				// 从dom中脱离
 				detached() {
-
+					console.log( 'I am detached' );
 				},
 
 				// 被销毁
 				disposed() {
-
+					console.log( 'I am disposed' );
 				},
 			} );
 
+			console.log( '---\nButton' );
+			console.dir( Button );
+			console.log( '---' );
+
 			const button = new Button();
 
+			console.log( '---\nbutton' );
 			console.log( button );
+			console.log( '---' );
 
 			button.$mount( '#app' );
 		</script>

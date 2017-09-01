@@ -1,5 +1,5 @@
-import { Watcher } from './watcher'
-import { Emitter } from './utils/emitter'
+import Watcher from './core/Watcher'
+import Emitter from './core/Emitter'
 import callHook from './utils/callHook'
 import compile from './compiler/compile'
 import patch from './vdom/patch'
