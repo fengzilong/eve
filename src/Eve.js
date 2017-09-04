@@ -24,8 +24,8 @@ class Eve extends Emitter {
 		this._dependencies = dependencies
 
 		// watch data changes
-		const watcher = new Watcher( { context: this, dependencies } )
-		watcher.$watch( this._build.bind( this ) )
+		const watcher = new Watcher( { context: this, path: 'data' } )
+		watcher.$on( 'update', this._build.bind( this ) )
 		this._watcher = watcher
 
 		callHook( this, 'created' )
@@ -34,6 +34,6 @@ class Eve extends Emitter {
 	// --- private ---
 
 	_build() {
-
+		console.log( '__build__' );
 	}
 }

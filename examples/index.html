@@ -44,12 +44,15 @@
 			const App = Eve.extend( {
 				data() {
 					return {
-						a: 1
+						first: 'first',
+						last: 'last',
 					}
 				},
 				props: [ 'text', 'color' ],
 				computed: {
-
+					fullname() {
+						return this.data.first + ' ' + this.data.last
+					}
 				},
 				methods: {
 					isString( v ) {
@@ -89,6 +92,20 @@
 				// 实例被创建
 				created() {
 					console.log( 'I am created' );
+					this.$watch( 'first', ( v1, v2 ) => {
+						this.data.full = this.data.first + this.data.last
+						console.log( `first is changed from ${ v2 } to ${ v1 }` );
+					} )
+					this.$watch( 'last', ( v1, v2 ) => {
+						this.data.full = this.data.first + this.data.last
+						console.log( `last is changed from ${ v2 } to ${ v1 }` );
+					} )
+					this.$watch( 'full', ( v1, v2 ) => {
+						console.log( `full is changed from ${ v2 } to ${ v1 }` );
+					} )
+
+					this.data.first = 'first2'
+					this.data.last = 'last2'
 				},
 
 				// 被挂载到dom中

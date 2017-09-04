@@ -1,4 +1,4 @@
-import Watcher, { watchable } from '../watcher'
+import Watcher from '../Watcher'
 
 test( 'should have $watch, $unwatch, $update', () => {
 	const ob = new Watcher( {
