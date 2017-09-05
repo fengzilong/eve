@@ -49,7 +49,7 @@ class Compiler {
 	EachStatement( { sequence, item, body } ) {
 		const _sequence = this.render( sequence )
 		const _body = this.render( body )
-		const _item = item.value
+		const _item = item
 
 		return `
 			loop( ${ _sequence }, function ( ${ _item }, ${ _item }_index ) {
@@ -58,11 +58,17 @@ class Compiler {
 		`
 	}
 
+	Text( { value } ) {
+		return `h( '#', {}, [ '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' ] )`
+	}
+
+	// --- expression ---
+
+	// ternary binary unary member call arguments object array ident string number
+
 	Expression() {
 		return 'expression'
 	}
 
-	Text( { value } ) {
-		return `h( '#text', {}, [ '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' ] )`
-	}
+
 }

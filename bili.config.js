@@ -1,8 +1,8 @@
-const pkg = require( './package.json' );
+const pkg = require( './package.json' )
 
 module.exports = {
 	format: 'umd',
-	compress: true,
+	// compress: true,
 	moduleName: 'Eve',
 	banner: {
 		name: 'Eve',
@@ -20,4 +20,4 @@ module.exports = {
 	flow: true,
 	browser: true,
 	esModules: true
-};
+}
