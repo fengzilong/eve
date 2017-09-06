@@ -50,6 +50,7 @@ const instance = {
 
 			let i = 0
 			for ( let v of sequence ) {
+				console.log( 'looping', v, i );
 				tmp.push( callback( v, i ) )
 				i++
 			}

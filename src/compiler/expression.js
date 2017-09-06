@@ -1,11 +1,11 @@
 // @flow
-import Token from './token'
-import ParserError from './error/ParserError'
-import getCodeFrame from './utils/getCodeFrame'
-import State from './state'
+import Token from './parser/token'
+import ParserError from './parser/error/ParserError'
+import getCodeFrame from './parser/utils/getCodeFrame'
+import State from './parser/state'
 import GLOBALS from './globals'
 
-export default class ExpressionParser {
+export default class ExpressionCompiler {
 	// --- private ---
 
 	source: string
@@ -13,10 +13,11 @@ export default class ExpressionParser {
 
 	// --- public ---
 
-	parse( source = '', tokens = [], {
-		globals = {},
-		initialState = ''
-	} = {} ) {
+	parse(
+		source = '',
+		tokens = [],
+		{ globals = {} } = {}
+	) {
 		tokens.forEach( ( token, index ) => {
 			token.index = index
 		} )
@@ -27,18 +28,11 @@ export default class ExpressionParser {
 		this.inserts = {}
 		this.state = new State()
 
-		if ( initialState ) {
-			this.state.enter( initialState )
-		}
-
 		return this.ternary()
 	}
 
-	createCompile( defaultTokens = [] ) {
-		const inserts = this.inserts
-		return ( tokens ) => {
-			return this._mergeInserts( tokens || defaultTokens, inserts )
-		}
+	compile() {
+		return this._mergeInserts( this.tokens, this.inserts )
 	}
 
 	// --- private ---

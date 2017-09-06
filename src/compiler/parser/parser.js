@@ -5,17 +5,6 @@ import getCodeFrame from './utils/getCodeFrame'
 import isSelfClosedTag from './utils/isSelfClosedTag'
 import Lexer from './lexer'
 import nodes from './nodeType/index'
-import ExpressionParser from './expression'
-
-// ---
-
-const parser = new ExpressionParser()
-
-function parseExpression( source, tokens ) {
-	const ast = parser.parse( source, tokens )
-	const compile = parser.createCompile( tokens )
-	return { ast, compile }
-}
 
 // ---
 
@@ -40,6 +29,7 @@ export default class TemplateParser {
 
 	parse( source ) {
 		this.scanned = []
+		this.globals = {}
 		this.source = source || this.source
 
 		// setup lexer
@@ -301,20 +291,25 @@ export default class TemplateParser {
 		} )
 
 		const expr = this.expression()
+		const op = expr.tokens[ expr.tokens.length - 2 ]
+		const item = expr.tokens[ expr.tokens.length - 1 ]
 
-		if ( expr.body.op !== 'as' ) {
+		if (
+			!op ||
+			op.type !== 'ident' ||
+			op.value !== 'as'
+		) {
 			this.error( {
-				message: `Expect 'as' expression`,
+				message: `Expect 'as' in expression`,
 				pos: eachToken.pos
 			} )
 		}
 
-		if ( expr.body.right && expr.body.right.type === 'ident' ) {
+		if ( item && item.type === 'ident' ) {
 			node.sequence = nodes.Expression( {
-				body: expr.body.left,
-				compile: () => expr.compile( expr.tokens.slice( 0, -2 ) )
+				tokens: expr.tokens.slice( 0, -2 )
 			} )
-			node.item = expr.body.right.value
+			node.item = item.value
 		} else {
 			this.error( {
 				message: `Expect right value in 'as' expression to be simple ident`,
@@ -330,9 +325,23 @@ export default class TemplateParser {
 			}
 		}
 
+		// add scope globals
+		const prevGlobals = this.globals
+		const currentGlobals = {}
+		currentGlobals[ item.value ] = true
+		currentGlobals[ item.value + '_index' ] = true
+		currentGlobals[ item.value + '_key' ] = true
+		this.globals = {
+			...this.globals,
+			...currentGlobals
+		}
+
 		while ( this.peek().type !== 'mustacheClose' && this.peek().type !== 'eos' ) {
 			receive( this.statement() )
 		}
+
+		// reset scope globals
+		this.globals = prevGlobals
 
 		const token = this.accept( 'mustacheClose' )
 		if ( !token || token.value !== 'each' ) {
@@ -350,24 +359,20 @@ export default class TemplateParser {
 
 		this.skipWhitespace()
 
-		/* tslint:disable */
-		while ( ( token =
-			this.accept( 'ident' ) ||
-			this.accept( 'string' ) ||
-			this.accept( 'number' ) ||
-			this.accept( 'symbol' )
-		) ) { /* tslint:enable */
+		while (
+			token =
+				this.accept( 'ident' ) ||
+				this.accept( 'string' ) ||
+				this.accept( 'number' ) ||
+				this.accept( 'symbol' )
+		) {
 			this.skipWhitespace()
 			tokens.push( token )
 		}
 
-		const { ast, compile } = parseExpression( this.source, tokens )
+		// const { ast, compile } = parseExpression( this.source, tokens )
 
-		return nodes.Expression( {
-			body: ast,
-			compile,
-			tokens,
-		} )
+		return nodes.Expression( { tokens, globals: this.globals } )
 	}
 
 	interpolation() {

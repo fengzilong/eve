@@ -308,7 +308,7 @@ export default class TemplateLexer {
 	text() {
 		const captures = this.match( 'TEXT' )
 		if ( captures ) {
-			if ( this.state.is( 'tagOpen' ) || this.state.is( 'expressionOpen' ) ) {
+			if ( this.state.is( 'tagOpen' ) || this.state.is( 'mustacheOpen' ) ) {
 				return this.error( 'text appears in unexpected state' )
 			}
 
@@ -319,6 +319,10 @@ export default class TemplateLexer {
 	}
 
 	whitespace() {
+		if ( this.state.is( 'data' ) ) {
+			return
+		}
+
 		const captures = this.match( 'WHITESPACE' )
 		if ( captures ) {
 			this.skip( captures )

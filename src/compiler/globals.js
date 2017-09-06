@@ -5,4 +5,7 @@ export default {
 	String,
 	Number,
 	isNaN,
+	'null': true,
+	'undefined': true,
+	'NaN': true,
 }

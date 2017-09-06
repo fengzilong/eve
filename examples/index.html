@@ -77,29 +77,9 @@
 				template:
 				`
 					<div>
-						<div>
-							{#each ( items[ a + 1 ][ !b ].c + 1 ) as a}
-								<div class="eve">
-									child1
-								</div>
-								<div class="eve" ref="v">
-									child2
-								</div>
-							{/each}
-						</div>
-
-						{#if isNaN( a )}
-						a
-						{#else}
-						b
-						{/if}
-
-						<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
-						<input :value="{ v }" @keyup.enter="{ onEnter() }" />
-
-
-						{#each items as item}
-							a { item + 1 } b
+						
+						{#each items as b}
+							a { b + 1 } b
 						{/each}
 					</div>
 				`
