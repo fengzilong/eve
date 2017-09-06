@@ -29,8 +29,37 @@ const instance = {
 	},
 
 	$update( ...args ) {
-		return this._watcher.$update( ...args )
+		this._watcher.$update( ...args )
 	},
+
+	// --- private ---
+
+	_build() {
+		const data = this.data
+
+		function _h( type, attrs, children ) {
+			return { type, attrs, children }
+		}
+
+		function _g( name ) {
+			return data[ name ]
+		}
+
+		function _l( sequence = [], callback ) {
+			const tmp = []
+
+			let i = 0
+			for ( let v of sequence ) {
+				tmp.push( callback( v, i ) )
+				i++
+			}
+
+			return tmp
+		}
+
+		console.log( this._render( _h, _g, _l ) )
+		console.log( '__build__' )
+	}
 }
 
 export default instance

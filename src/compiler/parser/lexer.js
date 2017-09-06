@@ -115,8 +115,6 @@ export default class TemplateLexer {
 		token.pos = startPos
 		token.frame = this.source.slice( startPos, endPos )
 
-		// console.log( 'advance', token )
-
 		return token
 	}
 

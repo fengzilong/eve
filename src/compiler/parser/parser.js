@@ -10,8 +10,11 @@ import ExpressionParser from './expression'
 // ---
 
 const parser = new ExpressionParser()
+
 function parseExpression( source, tokens ) {
-	return parser.parse( source, tokens )
+	const ast = parser.parse( source, tokens )
+	const compile = parser.createCompile( tokens )
+	return { ast, compile }
 }
 
 // ---
@@ -215,7 +218,7 @@ export default class TemplateParser {
 		}
 	}
 
-	['if']() {
+	[ 'if' ]() {
 		const ifToken = this.peekBefore()
 
 		const node = nodes.IfStatement( {
@@ -297,23 +300,25 @@ export default class TemplateParser {
 			body: [],
 		} )
 
-		// TODO: read sequence and item
 		const expr = this.expression()
 
 		if ( expr.body.op !== 'as' ) {
 			this.error( {
-				message: `Expect 'as' expression`
+				message: `Expect 'as' expression`,
+				pos: eachToken.pos
 			} )
 		}
 
-		if ( expr.body.right.type === 'ident' ) {
+		if ( expr.body.right && expr.body.right.type === 'ident' ) {
 			node.sequence = nodes.Expression( {
-				body: expr.body.left
+				body: expr.body.left,
+				compile: () => expr.compile( expr.tokens.slice( 0, -2 ) )
 			} )
 			node.item = expr.body.right.value
 		} else {
 			this.error( {
-				message: `Expect right value in 'as' expression to be simple ident`
+				message: `Expect right value in 'as' expression to be simple ident`,
+				pos: eachToken.pos + 7
 			} )
 		}
 
@@ -356,8 +361,12 @@ export default class TemplateParser {
 			tokens.push( token )
 		}
 
+		const { ast, compile } = parseExpression( this.source, tokens )
+
 		return nodes.Expression( {
-			body: parseExpression( this.source, tokens ),
+			body: ast,
+			compile,
+			tokens,
 		} )
 	}
 
@@ -370,6 +379,4 @@ export default class TemplateParser {
 
 		return node
 	}
-
-	// --- private end ---
 }

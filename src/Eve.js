@@ -30,10 +30,4 @@ class Eve extends Emitter {
 
 		callHook( this, 'created' )
 	}
-
-	// --- private ---
-
-	_build() {
-		console.log( '__build__' );
-	}
 }

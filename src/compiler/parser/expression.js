@@ -1,6 +1,9 @@
 // @flow
+import Token from './token'
 import ParserError from './error/ParserError'
 import getCodeFrame from './utils/getCodeFrame'
+import State from './state'
+import GLOBALS from './globals'
 
 export default class ExpressionParser {
 	// --- private ---
@@ -10,18 +13,59 @@ export default class ExpressionParser {
 
 	// --- public ---
 
-	parse( source = '', tokens = [] ) {
+	parse( source = '', tokens = [], {
+		globals = {},
+		initialState = ''
+	} = {} ) {
+		tokens.forEach( ( token, index ) => {
+			token.index = index
+		} )
 		this.source = source
 		this.tokens = tokens
+		this.index = 0
+		this.globals = { ...globals, ...GLOBALS }
+		this.inserts = {}
+		this.state = new State()
+
+		if ( initialState ) {
+			this.state.enter( initialState )
+		}
+
 		return this.ternary()
+	}
+
+	createCompile( defaultTokens = [] ) {
+		const inserts = this.inserts
+		return ( tokens ) => {
+			return this._mergeInserts( tokens || defaultTokens, inserts )
+		}
 	}
 
 	// --- private ---
 
+	_mergeInserts( array, inserts ) {
+		const tmp = []
+
+		for ( let item of array ) {
+			const index = item.index
+			const ins = inserts[ index ] || []
+			ins.filter( v => v.pos === 'before' ).map( v => v.tokens ).forEach( tokens => {
+				tmp.push( ...tokens )
+			} )
+			tmp.push( item )
+			const after = ins.filter( v => v.pos === 'after' ).map( v => v.tokens ).forEach( tokens => {
+				tmp.push( ...tokens )
+			} )
+		}
+
+
+		return tmp.map( v => v.frame ).join( '' )
+	}
+
 	// logicalOr ? ternary : ternary
 	// logicalOr
 	ternary() {
-		const test = this.logicalOr()
+		const test = this.binary()
 
 		if ( this.accept( '?' ) ) {
 			const consequent = this.ternary()
@@ -39,54 +83,27 @@ export default class ExpressionParser {
 		return test
 	}
 
-	// logicalAnd || logicalOr
-	logicalOr() {
-		const and = this.logicalAnd()
-
-		if ( this.accept( '||' ) ) {
-			return {
-				type: 'binary',
-				op: '||',
-				left: and,
-				right: this.logicalOr()
-			}
-		}
-
-		return and
-	}
-
-	// relational && logicalAnd
-	// relational
-	logicalAnd() {
-		const relational = this.relational()
-
-		if ( this.accept( '&&' ) ) {
-			return {
-				type: 'binary',
-				op: '&&',
-				left: relational,
-				right: this.logicalAnd()
-			}
-		}
-
-		return relational
-	}
-
-	// additive > relational
-	// additive < relational
-	// additive >= relational
-	// additive <= relational
-	// additive == relational
-	// additive != relational
-	// additive === relational
-	// additive !== relational
-	// additive
-	relational() {
-		const left = this.additive()
+	// unary * ternary
+	// unary / ternary
+	// unary % ternary
+	// unary ^ ternary
+	// unary
+	binary() {
+		const left = this.unary()
 
 		let token
+		let right
+
 		if (
-			token = (
+			token =
+				this.accept( '+' ) ||
+				this.accept( '-' ) ||
+
+				this.accept( '*' ) ||
+				this.accept( '/' ) ||
+				this.accept( '%' ) ||
+				this.accept( '^' ) ||
+
 				this.accept( '===' ) ||
 				this.accept( '!==' ) ||
 				this.accept( '==' ) ||
@@ -94,24 +111,46 @@ export default class ExpressionParser {
 				this.accept( '>=' ) ||
 				this.accept( '<=' ) ||
 				this.accept( '<' ) ||
-				this.accept( '>' )
-			)
+				this.accept( '>' ) ||
+
+				this.accept( '&&' ) ||
+				this.accept( '||' )
 		) {
 			return {
 				type: 'binary',
 				op: token.value,
 				left,
-				right: this.relational()
+				right: this.ternary()
 			}
 		} else if ( token = this.accept( 'ident' ) ) {
 			switch ( token.value ) {
 				case 'in':
-				case 'as':
+				case 'instanceof':
+					this.insertWhitespaceBefore( token.index )
+					this.insertWhitespaceAfter( token.index )
+
+					right = this.ternary()
+
 					return {
 						type: 'binary',
 						op: token.value,
 						left,
-						right: this.relational()
+						right
+					}
+				case 'as':
+					this.insertWhitespaceBefore( token.index )
+					this.insertWhitespaceAfter( token.index )
+
+					// disable wrap _g( ... )
+					this.state.enter( 'disable_prefix_g' )
+					right = this.unary()
+					this.state.leave( 'disable_prefix_g' )
+
+					return {
+						type: 'binary',
+						op: token.value,
+						left,
+						right
 					}
 				default:
 					// skip
@@ -121,61 +160,10 @@ export default class ExpressionParser {
 		return left
 	}
 
-	// multiplicative + additive
-	// multiplicative - additive
-	// multiplicative
-	additive() {
-		const left = this.multiplicative()
-
-		let token
-
-		if ( token = this.accept( '+' ) || this.accept( '-' ) ) {
-			return {
-				type: 'binary',
-				op: token.value,
-				left,
-				right: this.additive()
-			}
-		}
-
-		return left
-	}
-
-	// unary * multiplicative
-	// unary / multiplicative
-	// unary % multiplicative
-	// unary ^ multiplicative
-	// unary
-	multiplicative() {
-		const left = this.unary()
-
-		let token
-
-		if (
-			token =
-				this.accept( '*' ) ||
-				this.accept( '/' ) ||
-				this.accept( '%' ) ||
-				this.accept( '^' )
-		) {
-			return {
-				type: 'binary',
-				op: token.value,
-				left,
-				right: this.multiplicative()
-			}
-		}
-
-		return left
-	}
-
-	// !member
-	// ~member
-	// member
-	// !string
-	// !number
-	// string
-	// number
+	// !unary
+	// ~unary
+	// typeof unary
+	// member|number|string
 	unary() {
 		let token
 
@@ -183,6 +171,14 @@ export default class ExpressionParser {
 			return {
 				type: 'unary',
 				op: token.value,
+				body: this.unary()
+			}
+		} else if ( this.peek().type === 'ident' && this.peek().value === 'typeof' ) {
+			const token = this.next()
+			this.insertWhitespaceAfter( token.index )
+			return {
+				type: 'unary',
+				op: 'typeof',
 				body: this.unary()
 			}
 		} else {
@@ -194,9 +190,9 @@ export default class ExpressionParser {
 		}
 	}
 
-	// primary[ ident | string | number ]( arguments )
-	// primary[ ident | string | number ]
-	// primary.ident( arguments )
+	// primary[ ternary ]( arguments )
+	// primary[ ternary ]
+	// primary.ident|number( arguments )
 	// primary.ident|number
 	// primary
 	member( paths?: any[] ) {
@@ -212,8 +208,27 @@ export default class ExpressionParser {
 			return
 		}
 
+		const first = paths[ 0 ]
+		if (
+			paths.length === 1 && // is the only element in paths
+			first.type === 'ident' && // is ident
+			!( first.value in this.globals ) && // not in globals
+			!this.state.is( 'disable_prefix_g' ) // not disabled from outside
+		) {
+			const index = first.index
+			this.insertBefore( index, [
+				new Token( 'ident', '_g', { frame: '_g' } ),
+				new Token( 'symbol', '(', { frame: '(' } ),
+				new Token( 'symbol', `'`, { frame: `'` } ),
+			] )
+			this.insertAfter( index, [
+				new Token( 'symbol', `'`, { frame: `'` } ),
+				new Token( 'symbol', ')', { frame: ')' } )
+			] )
+		}
+
 		if ( this.accept( '.' ) ) {
-			const token = this.expect( 'ident' )
+			const token = this.primary()
 			paths.push( token )
 			return this.member( paths )
 		} else if ( this.accept( '[' ) ) {
@@ -367,47 +382,44 @@ export default class ExpressionParser {
 
 	// ( ternary )
 	parenthesis() {
-		let ternary
-
-		if ( this.accept( '(' ) ) {
-			ternary = this.ternary()
-			this.expect( ')' )
-		} else {
-			ternary = this.ternary()
-		}
+		this.expect( '(' )
+		const ternary = this.ternary()
+		this.expect( ')' )
 
 		return ternary
 	}
 
 	peek( n = 1 ) {
-		return this.tokens[ --n ]
+		return this.tokens[ this.index + n - 1 ]
 	}
 
 	next() {
-		return this.tokens.shift()
+		return this.tokens[ this.index++ ]
 	}
 
-	acceptMany( types ) {
-		if ( !Array.isArray( types ) ) {
-			types = [ types ]
-		}
-
-		const matchedTokens = []
-		const matched = types.every( ( type, i ) => {
-			const token = this.peek( i + 1 )
-			if ( isTokenAcceptable( token, type ) ) {
-				matchedTokens.push( token )
-				return true
-			}
-
-			return false
+	insert( index, tokens = [], pos = 'after' ) {
+		const key = index
+		this.inserts[ key ] = this.inserts[ key ] || [];
+		this.inserts[ key ].push( {
+			pos,
+			tokens,
 		} )
+	}
 
-		if ( !matched ) {
-			return false
-		}
+	insertBefore( index, tokens = [] ) {
+		this.insert( index, tokens, 'before' )
+	}
 
-		return matchedTokens
+	insertAfter( index, tokens = [] ) {
+		this.insert( index, tokens, 'after' )
+	}
+
+	insertWhitespaceBefore( index ) {
+		this.insertBefore( index, [ new Token( 'whitespace', ' ', { frame: ' ' } ) ] )
+	}
+
+	insertWhitespaceAfter( index ) {
+		this.insertAfter( index, [ new Token( 'whitespace', ' ', { frame: ' ' } ) ] )
 	}
 
 	accept( type ) {

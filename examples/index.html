@@ -46,6 +46,13 @@
 					return {
 						first: 'first',
 						last: 'last',
+
+						items: [1,2,{ true: { c: [1,2,3] } }],
+						a: 1,
+						b: false,
+						isString() {
+							return true
+						}
 					}
 				},
 				props: [ 'text', 'color' ],
@@ -70,20 +77,29 @@
 				template:
 				`
 					<div>
-						{#if 1 + 'dsa' - a[c[0]]( c + 1 )}
-							<input type="text">Primary</input>
-						{/if}
-						{#if aaa}
-							<input type="number">Outline</input>
+						<div>
+							{#each ( items[ a + 1 ][ !b ].c + 1 ) as a}
+								<div class="eve">
+									child1
+								</div>
+								<div class="eve" ref="v">
+									child2
+								</div>
+							{/each}
+						</div>
+
+						{#if isNaN( a )}
+						a
+						{#else}
+						b
 						{/if}
 
-						{#each items as a}
-							<div class="eve">
-								child1
-							</div>
-							<div class="eve" ref="v">
-								child2
-							</div>
+						<a @click.prevent="{ onClick($e) }">{ isString( v ) ? v + 1 : 'hello' }</a>
+						<input :value="{ v }" @keyup.enter="{ onEnter() }" />
+
+
+						{#each items as item}
+							a { item + 1 } b
 						{/each}
 					</div>
 				`

@@ -26,14 +26,15 @@ class Compiler {
 
 		const rendered = this[ ast.type ] ? this[ ast.type ]( ast ) : ''
 
-		console.log( ast, '->', rendered );
+		console.log( 'ast from ->', ast );
+		console.log( 'render to ->', rendered );
 
 		return rendered
 	}
 
 	Tag( { name, attributes, children } ) {
 		const _children = this.render( children )
-		return `h( '${ name }', ${ JSON.stringify( attributes ) }, [ ${ _children } ] )`
+		return `_h( '${ name }', ${ JSON.stringify( attributes ) }, [ ${ _children } ] )`
 	}
 
 	IfStatement( { test, consequent, alternate } ) {
@@ -51,24 +52,25 @@ class Compiler {
 		const _body = this.render( body )
 		const _item = item
 
+		console.log( '++', body );
+
 		return `
-			loop( ${ _sequence }, function ( ${ _item }, ${ _item }_index ) {
+			_l( ${ _sequence }, function ( ${ _item }, ${ _item }_index ) {
 				return ${ _body }
 			} )
 		`
 	}
 
-	Text( { value } ) {
-		return `h( '#', {}, [ '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' ] )`
+	Text( ast ) {
+		const value = ast.value
+		return `_h( '#text', {}, [ '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' ] )`
 	}
 
 	// --- expression ---
 
-	// ternary binary unary member call arguments object array ident string number
-
-	Expression() {
-		return 'expression'
+	Expression( ast ) {
+		console.log( '--', ast );
+		return ast.compile()
 	}
-
 
 }

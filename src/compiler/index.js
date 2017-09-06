@@ -7,6 +7,6 @@ export default function ( source ) {
 	console.log( renderFnString );
 	return {
 		dependencies: [],
-		render: new Function ( 'h', 'return ' + renderFnString )
+		render: new Function ( '_h', '_g', '_l', 'return ' + renderFnString )
 	}
 }

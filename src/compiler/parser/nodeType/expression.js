@@ -1,7 +1,7 @@
 // @flow
-export default function ( options?:{ body?: any } ) {
+export default function ( options?:any = {} ) {
 	return {
 		type: 'Expression',
-		body: options.body,
+		...options
 	}
 }
