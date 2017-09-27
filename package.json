@@ -4,7 +4,7 @@
   "main": "dist/eve.js",
   "scripts": {
     "test": "npm run lint && jest --no-cache",
-    "test:watch": "jest --no-cache --watchAll",
+    "test:watch": "jest --no-cache --watch",
     "dev": "bili --watch",
     "dist": "bili",
     "precommit": "npm test",

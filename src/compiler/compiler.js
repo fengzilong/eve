@@ -26,7 +26,7 @@ class Compiler {
 		const ast = strip( this._parser.parse( source ) )
 		if ( ast.length > 1 ) {
 			console.error( source );
-			throw new Error( `Expect an root element in template` )
+			throw new Error( `Expect only one root element in template` )
 		}
 
 		return this.render( ast[ 0 ], true )
