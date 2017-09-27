@@ -3,6 +3,7 @@ import Emitter from './core/Emitter'
 import callHook from './core/callHook'
 import compile from './compiler'
 import patch from './vdom/patch'
+import { h, g, l } from './vdom/helpers'
 
 export default Eve
 
@@ -20,7 +21,7 @@ class Eve extends Emitter {
 
 		// compile template to render function
 		const { render, dependencies } = compile( this.template || '' )
-		this._render = render
+		this._render = render.bind( this, h, g.bind( this ), l )
 		this._dependencies = dependencies
 
 		// watch data changes

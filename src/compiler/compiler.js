@@ -51,8 +51,12 @@ class Compiler {
 
 	IfStatement( { test, consequent, alternate } ) {
 		const _test = this.render( test )
-		const _consequent = consequent.length > 0 ? this.render( consequent, true ) : 'null'
-		const _alternate = alternate.length > 0 ? this.render( alternate, true ) : 'null'
+		const _consequent = consequent.length > 0
+			? '[' + this.render( consequent, true ) + ']'
+			: 'null'
+		const _alternate = alternate.length > 0
+			? '[' + this.render( alternate, true ) + ']'
+			: 'null'
 
 		return `
 			${ _test } ? ${ _consequent } : ${ _alternate }
@@ -61,19 +65,19 @@ class Compiler {
 
 	EachStatement( { sequence, item, body } ) {
 		const _sequence = this.render( sequence )
-		const _body = this.render( body, true )
+		const _body = '[' + this.render( body, true ) + ']'
 		const _item = item
 
 		return `
 			_l( ${ _sequence }, function ( ${ _item }, ${ _item }_index ) {
-				return [ ${ _body } ]
+				return ${ _body }
 			} )
 		`
 	}
 
 	Text( ast ) {
 		const value = ast.value
-		return `_h( '#text', {}, [ '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' ] )`
+		return `_h( '#text', {}, [], { value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )`
 	}
 
 	// --- expression ---
@@ -89,7 +93,7 @@ class Compiler {
 			globals: ast.globals
 		} )
 
-		return `_h( '#text', {}, [ ${ compiled } ] )`
+		return `_h( '#text', {}, [], { value: ${ compiled } } )`
 	}
 }
 
