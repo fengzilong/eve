@@ -22,17 +22,24 @@ export default class TemplateLexer {
 
 	// --- constructor ---
 
-	constructor( source = '', options = {} ) {
+	constructor( source: string = '', options: any = {} ) {
 		this.source = source
 		this.rest = source
 		this.options = options
 		this.stash = []
-		this.pos = 0
 		this.marker = {
 			brace: 0,
 		}
 		this.state = new State()
 		this.state.enter( 'data' )
+
+		if ( options.trim ) {
+			const leadingSpaces = /^\s*/.exec( source )
+			this.pos = leadingSpaces ? leadingSpaces[ 0 ].length : 0
+			this.rest = this.rest.trim()
+		} else {
+			this.pos = 0
+		}
 	}
 
 	// --- public ---
@@ -50,7 +57,8 @@ export default class TemplateLexer {
 	}
 
 	next() {
-		return this.stashed() || this.advance()
+		const token = this.stashed() || this.advance()
+		return token
 	}
 
 	// --- private ---

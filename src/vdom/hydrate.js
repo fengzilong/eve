@@ -1,3 +1,15 @@
-export default function hydrate( DOMNode, VNode ) {
+export default hydrate
+
+// ---
+
+function hydrate( DOMNode, VNode ) {
+
+}
+
+function patchProps() {
+
+}
+
+function patchEvents() {
 
 }

@@ -1,4 +1,4 @@
-export { h, g, l }
+export { h, g, l, o }
 
 // ---
 
@@ -24,4 +24,9 @@ function l( sequence = [], callback ) {
 	}
 
 	return tmp
+}
+
+function o( vdom ) {
+	console.log( 'Optimizing vdom', vdom )
+	return vdom
 }
