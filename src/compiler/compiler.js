@@ -1,5 +1,6 @@
 import { Parser as TemplateParser } from './template'
 import ExpressionCompiler from './expression'
+import tidy from './tidy'
 
 export default Compiler
 
@@ -12,7 +13,9 @@ class Compiler {
 	compile( source ) {
 		this._source = source
 
-		const ast = strip( this._parser.parse( source ) )
+		let ast = this._parser.parse( source )
+		ast = tidy( ast )
+
 		if ( ast.length > 1 ) {
 			console.error( source )
 			throw new Error( `Expect one root element in template` )
@@ -92,16 +95,6 @@ class Compiler {
 	}
 }
 
-function strip( ast ) {
-	return ast.filter( v => {
-		if ( v.type === 'Text' && /^\s+$/.test( v.value ) ) {
-			return false
-		}
-
-		return true
-	} )
-}
-
 // ---
 
 const c = new ExpressionCompiler()
@@ -110,5 +103,3 @@ function compileExpression( source = '', tokens = [], options = {} ) {
 	c.parse( source, tokens, options )
 	return c.compile()
 }
-
-// ---
