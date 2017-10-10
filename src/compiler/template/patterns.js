@@ -1,4 +1,4 @@
-import compile from './utils/compileRegex'
+import compile from '../shared/compileRegex'
 
 const _ = ( function () {
 	// https://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-QName

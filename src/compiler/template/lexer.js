@@ -1,8 +1,8 @@
 // @flow
-import State from './state'
-import Token from './token'
-import LexerError from './error/LexerError'
-import getCodeFrame from './utils/getCodeFrame'
+import State from '../shared/state'
+import Token from '../shared/token'
+import LexerError from '../shared/error/LexerError'
+import getCodeFrame from '../shared/getCodeFrame'
 import patterns from './patterns'
 
 const hasOwn = Object.hasOwnProperty

@@ -1,11 +1,11 @@
-import Parser from './parser'
+import { Parser as TemplateParser } from './template'
 import ExpressionCompiler from './expression'
 
 export default Compiler
 
 class Compiler {
 	constructor() {
-		this._parser = new Parser()
+		this._parser = new TemplateParser()
 		this._source = ''
 	}
 

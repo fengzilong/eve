@@ -1,10 +1,10 @@
 // @flow
 
-import ParserError from './error/ParserError'
-import getCodeFrame from './utils/getCodeFrame'
+import ParserError from '../shared/error/ParserError'
+import getCodeFrame from '../shared/getCodeFrame'
 import isSelfClosedTag from './utils/isSelfClosedTag'
 import Lexer from './lexer'
-import nodes from './nodeType/index'
+import nodes from './nodeTypes'
 
 // ---
 

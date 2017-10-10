@@ -1,8 +1,8 @@
 // @flow
-import Token from './parser/token'
-import ParserError from './parser/error/ParserError'
-import getCodeFrame from './parser/utils/getCodeFrame'
-import State from './parser/state'
+import Token from '../shared/token'
+import ParserError from '../shared/error/ParserError'
+import getCodeFrame from '../shared/getCodeFrame'
+import State from '../shared/state'
 import GLOBALS from './globals'
 
 export default class ExpressionCompiler {
