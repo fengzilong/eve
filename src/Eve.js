@@ -29,7 +29,11 @@ class Eve extends Emitter {
 		// watch data changes
 		const watcher = new Watcher( { context: this, path: 'data' } )
 		// TODO: filter updated properties, if not in dependencies, ignore
-		watcher.$on( 'update', this._build.bind( this ) )
+		watcher.$on( 'update', () => {
+			console.log( '__build_start__' )
+			console.log( this._render() )
+			console.log( '__build__end__' )
+		} )
 		this._watcher = watcher
 
 		callHook( this, 'created' )

@@ -29,15 +29,14 @@ const instance = {
 	},
 
 	$update( ...args ) {
-		this._watcher.$update( ...args )
+		return this._watcher.$update( ...args )
+	},
+
+	$get( ...args ) {
+		return this._watcher.$get( ...args )
 	},
 
 	// --- private ---
-
-	_build() {
-		console.log( this._render() )
-		console.log( '__build__' )
-	}
 }
 
 export default instance

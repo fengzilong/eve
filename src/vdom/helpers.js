@@ -6,9 +6,9 @@ function h( type, attrs = {}, children = [], extra = {} ) {
 	return { type, attrs, children, ...extra }
 }
 
+// should be bound before passing to render function
 function g( name ) {
-	// bind before passing to render function
-	return this.data[ name ]
+	return this.$get( name )
 }
 
 function l( sequence = [], callback ) {
@@ -16,7 +16,7 @@ function l( sequence = [], callback ) {
 
 	let i = 0
 	for ( let v of sequence ) {
-		console.log( 'looping', v, i );
+		console.log( 'Looping', v, i );
 		for ( let v2 of callback( v, i ) ) {
 			tmp.push( v2 )
 		}
@@ -26,7 +26,36 @@ function l( sequence = [], callback ) {
 	return tmp
 }
 
-function o( vdom ) {
-	console.log( 'Optimizing vdom', vdom )
-	return vdom
+function o( vnode ) {
+	console.log( 'Optimizing vnode', vnode )
+	return optimize( vnode )
+}
+
+// merge sibling text into one
+function optimize( vnode ) {
+	const children = vnode.children || []
+
+	const newChildren = []
+
+	let texts = []
+	children.forEach( child => {
+		if ( child.type === '#text' ) {
+			texts.push( child )
+		} else {
+			if ( texts.length > 0 ) {
+				newChildren.push( h( '#text', {}, [], {
+					value: texts.map( text => text.value ).join( '' )
+				} ) )
+				texts = []
+			}
+
+			optimize( child )
+
+			newChildren.push( child )
+		}
+	} )
+
+	vnode.children = newChildren
+
+	return vnode
 }
