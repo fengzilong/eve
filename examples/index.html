@@ -108,6 +108,9 @@
 					this.$watch( 'full', ( v1, v2 ) => {
 						console.log( `full is changed from ${ v2 } to ${ v1 }` );
 					} )
+					this.$watch( 'fullname', ( v1, v2 ) => {
+						console.log( `fullname is changed from ${ v2 } to ${ v1 }` );
+					} )
 
 					this.data.first = 'first2'
 					this.data.last = 'last2'

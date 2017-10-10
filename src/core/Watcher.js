@@ -21,6 +21,7 @@ export default class Watcher {
 		this._path = path
 		this._computed = normalizeComputed( context.computed, context )
 		this._computedCache = {}
+		this._watchers = []
 	}
 
 	// --- public ---
@@ -43,31 +44,53 @@ export default class Watcher {
 
 	$update() {
 		this._digest( { ttl: 20 } )
-		this._compute()
 		this.$emit( 'update' )
 	}
 
-	$get( key ) {
-		// $get will read computed property from cache
-		if ( key in this._computedCache ) {
-			return this._computedCache[ key ]
-		}
-
-		return prop.get( this._data(), key )
+	// read from cache
+	$get( path ) {
+		return this._get( path, { fromCache: true } )
 	}
 
 	// --- private ---
 
-	_compute() {
+	_get( path: string, options: any = {} ) {
+		if ( this._isComputed( path ) ) {
+			// re-calc if not from cache
+			if ( !options.fromCache ) {
+				this._compute( path )
+			}
+			return this._computedCache[ path ]
+		}
+
+		return prop.get( this._data(), path )
+	}
+
+	_isComputed( path: string ) {
+		return path in this._computed
+	}
+
+	_compute( path?: string ) {
 		const computed = this._computed
-		const computedCache = this._computedCache
-		for ( const key in computed ) {
-			computedCache[ key ] = computed[ key ].get()
+
+		if ( typeof path === 'undefined' ) {
+			// cache all
+			for ( const p in computed ) {
+				this._cacheComputedByPath( p )
+			}
+		} else {
+			// cache one
+			this._cacheComputedByPath( path )
 		}
 	}
 
+	_cacheComputedByPath( path: string ) {
+		this._computedCache[ path ] = this._computed[ path ].get()
+	}
+
+	// during digest, computed properties will be fetched from last digest cache
 	_digest( { ttl } ) {
-		const watchers = this._watchers || []
+		const watchers = this._watchers
 		const context = this._context
 
 		while( ttl-- ) {
@@ -75,6 +98,7 @@ export default class Watcher {
 
 			for ( let i = 0, len = watchers.length; i < len; i++ ) {
 				const watcher = watchers[ i ]
+				// automatically calc computed properties and cache it
 				const current = watcher.getter()
 				if (
 					( watcher.last !== current ) ||
@@ -87,7 +111,7 @@ export default class Watcher {
 			}
 
 			if ( dirty && !ttl ) {
-				throw new Error( 'Digest failed' )
+				throw new Error( 'digest too many times' )
 			}
 
 			if ( !dirty ) {
@@ -114,11 +138,6 @@ export default class Watcher {
 
 	_data() {
 		return this._context[ this._path ] || {}
-	}
-
-	_get( path ) {
-		const context = this._data()
-		return prop.get( context, path )
 	}
 
 	_unwatchOne( watcher: WO ): void {
