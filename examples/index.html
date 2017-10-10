@@ -40,6 +40,14 @@
 			{#each items + 1 as item}
 				{ item + 1 }
 			{/each}
+
+			{#if b}
+				<div>1</div>
+				<div>2</div>
+			{#else}
+				<div>3</div>
+				<div>4</div>
+			{/if}
 			`;
 			const App = Eve.extend( {
 				data() {
@@ -76,18 +84,11 @@
 				},
 				template:
 				`
-					<div>
-						<span>label</span>
-						{#if b}
-							<div>1</div>
-							<div>2</div>
-						{#else}
-							<div>3</div>
-							<div>4</div>
-						{/if}
-
+					<div class="clazz">
 						{#each items as b}
-							a { b + 1 } b
+							<div>a</div>
+							{ b + 1 }
+							<div>b</div>
 						{/each}
 					</div>
 				`

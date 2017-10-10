@@ -25,16 +25,16 @@ class Compiler {
 
 		const ast = strip( this._parser.parse( source ) )
 		if ( ast.length > 1 ) {
-			console.error( source );
-			throw new Error( `Expect only one root element in template` )
+			console.error( source )
+			throw new Error( `Expect one root element in template` )
 		}
 
-		return this.render( ast[ 0 ], true )
+		return this._render( ast[ 0 ], true )
 	}
 
-	render( ast, isChildren ) {
+	_render( ast, isChildren ) {
 		if ( Array.isArray( ast ) ) {
-			return ast.map( this.render.bind( this ) ).join( ',' )
+			return ast.map( this._render.bind( this ) ).join( ',' )
 		}
 
 		if ( isChildren && ast.type === 'Expression' ) {
@@ -45,17 +45,21 @@ class Compiler {
 	}
 
 	Tag( { name, attributes, children } ) {
-		const _children = this.render( children, true )
-		return `_h( '${ name }', ${ JSON.stringify( attributes ) }, [ ${ _children } ] )`
+		const _children = this._render( children, true )
+		return `_h(
+			'${ name }',
+			${ JSON.stringify( attributes ) },
+			[].concat( ${ _children } )
+		)`
 	}
 
 	IfStatement( { test, consequent, alternate } ) {
-		const _test = this.render( test )
+		const _test = this._render( test )
 		const _consequent = consequent.length > 0
-			? '[' + this.render( consequent, true ) + ']'
+			? '[' + this._render( consequent, true ) + ']'
 			: 'null'
 		const _alternate = alternate.length > 0
-			? '[' + this.render( alternate, true ) + ']'
+			? '[' + this._render( alternate, true ) + ']'
 			: 'null'
 
 		return `
@@ -64,8 +68,8 @@ class Compiler {
 	}
 
 	EachStatement( { sequence, item, body } ) {
-		const _sequence = this.render( sequence )
-		const _body = '[' + this.render( body, true ) + ']'
+		const _sequence = this._render( sequence )
+		const _body = '[' + this._render( body, true ) + ']'
 		const _item = item
 
 		return `
@@ -77,7 +81,9 @@ class Compiler {
 
 	Text( ast ) {
 		const value = ast.value
-		return `_h( '#text', {}, [], { value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )`
+		return `
+			_h( '#text', {}, [], { value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )
+		`
 	}
 
 	// --- expression ---
