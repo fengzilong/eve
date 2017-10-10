@@ -84,9 +84,9 @@
 				},
 				template:
 				`
-					<div class="clazz">
+					<div class="clazz { abc }">
 						{#each items as b}
-							<div>a</div>
+							<div @click="{ onClick($e, b) }">a</div>
 							{ b + 1 }
 							<div>b</div>
 						{/each}

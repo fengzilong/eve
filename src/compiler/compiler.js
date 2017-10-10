@@ -1,6 +1,6 @@
 import { Parser as TemplateParser } from './template'
 import ExpressionCompiler from './expression'
-import tidy from './tidy'
+import optimize from './optimize'
 
 export default Compiler
 
@@ -14,7 +14,7 @@ class Compiler {
 		this._source = source
 
 		let ast = this._parser.parse( source )
-		ast = tidy( ast )
+		ast = optimize( ast )
 
 		if ( ast.length > 1 ) {
 			console.error( source )
