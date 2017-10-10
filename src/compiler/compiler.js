@@ -3,17 +3,6 @@ import ExpressionCompiler from './expression'
 
 export default Compiler
 
-// ---
-
-const ec = new ExpressionCompiler()
-
-function compileExpression( source = '', tokens = [], options = {} ) {
-	ec.parse( source, tokens, options )
-	return ec.compile()
-}
-
-// ---
-
 class Compiler {
 	constructor() {
 		this._parser = new Parser()
@@ -112,3 +101,14 @@ function strip( ast ) {
 		return true
 	} )
 }
+
+// ---
+
+const c = new ExpressionCompiler()
+
+function compileExpression( source = '', tokens = [], options = {} ) {
+	c.parse( source, tokens, options )
+	return c.compile()
+}
+
+// ---
