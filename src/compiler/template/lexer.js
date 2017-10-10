@@ -31,7 +31,7 @@ export default class TemplateLexer {
 			brace: 0,
 		}
 		this.state = new State()
-		this.state.enter( 'data' )
+		this.state.enter( options.initialState || 'data' )
 
 		if ( options.trim ) {
 			const leadingSpaces = /^\s*/.exec( source )
