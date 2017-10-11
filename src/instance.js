@@ -20,6 +20,10 @@ const instance = {
 		callHook( this, 'disposed' )
 	},
 
+	$dispose() {
+
+	},
+
 	$watch( ...args ) {
 		return this._watcher.$watch( ...args )
 	},

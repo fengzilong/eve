@@ -1,6 +1,7 @@
 const statics = {
-	component() {
-
+	component( name, Component ) {
+		this.prototype.components = this.prototype.components || {}
+		this.prototype.components[ name ] = Component
 	},
 
 	filter() {

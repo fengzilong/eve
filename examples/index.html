@@ -49,7 +49,24 @@
 				<div>4</div>
 			{/if}
 			`;
+
+			const Button = Eve.extend( {
+				template: `
+					<button>{ text }</button>
+				`,
+
+				data() {
+					return {
+						text: '按钮文字'
+					}
+				},
+			} )
+
 			const App = Eve.extend( {
+				components: {
+					Button
+				},
+
 				data() {
 					return {
 						first: 'first',
@@ -143,6 +160,15 @@
 			console.log( '---' );
 
 			app.$mount( '#app' );
+
+			console.log( 'Sub ->' );
+
+			const SubApp = App.extend( {
+				components: { A: () => {} }
+			} )
+			SubApp.component( 'B', () => {} )
+			App.component( 'C', () => {} )
+			new SubApp()
 		</script>
 	</body>
 </html>

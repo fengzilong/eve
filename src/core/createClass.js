@@ -12,6 +12,7 @@ function createClass(
 	Object.assign( target.prototype, protoProps )
 	target.extend = createExtend( staticProps )
 	target.implement = createImplement( target.prototype )
+	target.proto = pro.bind( target )
 
 	return target
 }
@@ -34,6 +35,7 @@ function createExtend( staticProps: Object ): Function {
 		// add extend and implement
 		Child.extend = extend
 		Child.implement = createImplement( parentProto )
+		Child.proto = pro.bind( Child )
 
 		// inherits static methods
 		Object.assign( Child, staticProps )
@@ -52,7 +54,6 @@ function createImplement( parentProto ): Function {
 		// assign and supr
 		for ( const key in definition ) {
 			if ( hasOwn.call( definition, key ) ) {
-
 				// function and contains supr invoke
 				let value = definition[ key ]
 				const parentProtoValue = parentProto[ key ]
@@ -68,6 +69,22 @@ function createImplement( parentProto ): Function {
 			}
 		}
 		return this
+	}
+}
+
+function pro( property ) {
+	return walk( this, property )
+}
+
+function walk( Ctor = {}, property = '' ) {
+	const value = ( Ctor.prototype && Ctor.prototype[ property ] ) || {}
+	if ( Ctor.parent ) {
+		return {
+			...walk( Ctor.parent, property ),
+			...value
+		}
+	} else {
+		return value
 	}
 }
 

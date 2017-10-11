@@ -21,7 +21,9 @@ class Eve extends Emitter {
 		// compile template to render function
 		const { render, dependencies } = compile( this.template || '' )
 		this._render = render.bind(
+			// context
 			this,
+			// helpers
 			h, g.bind( this ), l, o
 		)
 		this._dependencies = dependencies
