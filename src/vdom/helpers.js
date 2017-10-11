@@ -2,8 +2,8 @@ export { h, g, l, o }
 
 // ---
 
-function h( type, attrs = {}, children = [], extra = {} ) {
-	return { type, attrs, children, ...extra }
+function h( name, attrs = {}, children = [], extra = {} ) {
+	return { name, attrs, children, ...extra }
 }
 
 // should be bound before passing to render function

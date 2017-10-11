@@ -103,9 +103,12 @@
 				`
 					<div class="clazz { abc }" disabled a>
 						{#each items as b}
+							---
 							<div @click="{ onClick($e, 'a', b) }">a</div>
 							{ b + 1 }
 							<div>b</div>
+							---
+							<br />
 						{/each}
 					</div>
 				`
@@ -161,14 +164,14 @@
 
 			app.$mount( '#app' );
 
-			console.log( 'Sub ->' );
-
-			const SubApp = App.extend( {
-				components: { A: () => {} }
-			} )
-			SubApp.component( 'B', () => {} )
-			App.component( 'C', () => {} )
-			new SubApp()
+			// console.log( 'Sub ->' );
+			//
+			// const SubApp = App.extend( {
+			// 	components: { A: () => {} }
+			// } )
+			// SubApp.component( 'B', () => {} )
+			// App.component( 'C', () => {} )
+			// new SubApp()
 		</script>
 	</body>
 </html>
