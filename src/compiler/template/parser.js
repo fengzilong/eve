@@ -22,18 +22,19 @@ export default class TemplateParser {
 	constructor( source = '', options = {} ) {
 		this.source = source
 		this.options = options
-		this.scanned = []
 	}
 
 	// --- public ---
 
-	parse( source ) {
+	parse( source, options ) {
+		const opts = options || this.options || {}
+
 		this.scanned = []
-		this.globals = {}
+		this.globals = opts.globals || {}
 		this.source = source || this.source
 
 		// setup lexer
-		this.lexer = new Lexer( this.source, this.options )
+		this.lexer = new Lexer( this.source, opts )
 
 		return this.statements()
 	}
@@ -164,9 +165,24 @@ export default class TemplateParser {
 			name: tagName,
 		} )
 
-		while ( this.peek().type !== 'tagEnd' && this.peek().type !== 'eos' ) {
-			const token = this.accept( 'attribute' )
-			node.attributes[ token.value.name ] = token.value.value
+		while ( true ) {
+			this.skipWhitespace()
+			if ( this.peek().type === 'tagEnd' || this.peek().type === 'eos' ) {
+				break
+			}
+			const attrKey = this.accept( 'attributeKey' )
+			const attrValue = this.accept( 'attributeValue' )
+			if ( attrValue ) {
+				const parser = new TemplateParser()
+				const ast = parser.parse( this.source, {
+					startIndex: attrValue.value.start,
+					endIndex: attrValue.value.end,
+					globals: this.globals
+				} )
+				node.attributes[ attrKey.value.value ] = ast
+			} else {
+				node.attributes[ attrKey.value.value ] = []
+			}
 		}
 
 		const tagEndToken = this.expect( 'tagEnd' )

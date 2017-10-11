@@ -17,7 +17,8 @@ const _ = ( function () {
 export default {
 	// TAG
 	TAG_OPEN: _( /^<({{TAG_NAME}})\s*/ ),
-	ATTRIBUTE: /^([-@:\.0-9a-z\(\)\[\]]+)(=(['"])*([^\3]*?)\3)?\s*/,
+	ATTRIBUTE_KEY: /^([-@:\.0-9a-z\(\)\[\]]+)/,
+	ATTRIBUTE_VALUE: /^(=(['"])*([^\3]*?)\2)?\s*/,
 	TAG_END: /^(\/?)>/,
 	TAG_CLOSE: _( /^<\/({{TAG_NAME}})>/ ),
 	TAG_COMMENT: /^<\!--([^\x00]*?)--\>/,

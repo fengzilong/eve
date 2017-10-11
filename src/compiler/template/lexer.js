@@ -32,13 +32,20 @@ export default class TemplateLexer {
 		}
 		this.state = new State()
 		this.state.enter( options.initialState || 'data' )
+		this.pos = 0
 
 		if ( options.trim ) {
 			const leadingSpaces = /^\s*/.exec( source )
 			this.pos = leadingSpaces ? leadingSpaces[ 0 ].length : 0
-			this.rest = this.rest.trim()
-		} else {
-			this.pos = 0
+			this.rest = source.trim()
+		}
+
+		if ( typeof options.startIndex === 'number' ) {
+			this.pos = options.startIndex
+
+			if ( typeof options.endIndex === 'number' ) {
+				this.rest = source.substring( options.startIndex, options.endIndex )
+			}
 		}
 	}
 
@@ -109,7 +116,8 @@ export default class TemplateLexer {
 			this.tagOpen() ||
 			this.tagEnd() ||
 			this.tagClose() ||
-			this.attribute() ||
+			this.attributeKey() ||
+			this.attributeValue() ||
 			this.mustacheOpen() ||
 			this.mustacheClose() ||
 			this.interpolationOpen() ||
@@ -121,7 +129,8 @@ export default class TemplateLexer {
 		const endPos = this.pos
 
 		token.pos = startPos
-		token.frame = this.source.slice( startPos, endPos )
+		token.endPos = endPos
+		token.frame = this.source.substring( startPos, endPos )
 
 		return token
 	}
@@ -143,18 +152,36 @@ export default class TemplateLexer {
 			return new Token( 'tagOpen', { name } )
 		}
 	}
-	attribute() {
+	attributeKey() {
 		if ( !this.state.is( 'tagOpen' ) ) {
 			return
 		}
 
-		const captures = this.match( 'ATTRIBUTE' )
+		const captures = this.match( 'ATTRIBUTE_KEY' )
 
 		if ( captures ) {
 			this.skip( captures )
-			const name = captures[ 1 ]
-			const value = captures[ 4 ]
-			return new Token( 'attribute', { name, value } )
+			const value = captures[ 1 ]
+			return new Token( 'attributeKey', { value } )
+		}
+	}
+	attributeValue() {
+		if ( !this.state.is( 'tagOpen' ) ) {
+			return
+		}
+
+		const captures = this.match( 'ATTRIBUTE_VALUE' )
+
+		if ( captures ) {
+			const value = captures[ 3 ]
+			const start = this.pos + captures[ 0 ].indexOf( value )
+			const end = start + value.length
+			this.skip( captures )
+			return new Token( 'attributeValue', {
+				value,
+				start,
+				end
+			} )
 		}
 	}
 	tagEnd() {

@@ -14,33 +14,49 @@ class Compiler {
 	compile( source ) {
 		this._source = source
 
-		let ast = this._parser.parse( source )
+		const ast = this._parser.parse( source )
+
+		console.log( 'ast', ast )
 
 		if ( ast.length > 1 ) {
 			console.error( source )
 			throw new Error( `Expect one root element in template` )
 		}
 
-		return this._render( ast[ 0 ], true )
+		return this._render( ast[ 0 ], {
+			isChildren: true
+		} )
 	}
 
-	_render( ast, isChildren ) {
+	_render( ast, options = {} ) {
+		options.punctuation = options.punctuation || ','
+
 		if ( Array.isArray( ast ) ) {
-			return ast.map( this._render.bind( this ) ).join( ',' )
+			return ast.map( v => {
+				return this._render( v, options )
+			} ).join( options.punctuation )
 		}
 
-		if ( isChildren && ast.type === 'Expression' ) {
-			return this.renderExpressionAsText( ast )
-		}
-
-		return this[ ast.type ] ? this[ ast.type ]( ast ) : ''
+		return this[ ast.type ] ? this[ ast.type ]( ast, options ) : ''
 	}
 
 	Tag( { name, attributes, children } ) {
-		const _children = this._render( children, true )
+		const _children = this._render( children, {
+			isChildren: true
+		} )
+
+		let _attrs = {}
+		for ( const key in attributes ) {
+			_attrs[ key ] = this._render( attributes[ key ], {
+				isAttribute: true,
+				punctuation: '+'
+			} )
+		}
+		_attrs = JSON.stringify( _attrs )
+
 		return `_h(
 			'${ name }',
-			${ JSON.stringify( attributes ) },
+			${ _attrs },
 			[].concat( ${ _children } )
 		)`
 	}
@@ -48,10 +64,10 @@ class Compiler {
 	IfStatement( { test, consequent, alternate } ) {
 		const _test = this._render( test )
 		const _consequent = consequent.length > 0
-			? '[' + this._render( consequent, true ) + ']'
+			? '[' + this._render( consequent, { isChildren: true } ) + ']'
 			: 'null'
 		const _alternate = alternate.length > 0
-			? '[' + this._render( alternate, true ) + ']'
+			? '[' + this._render( alternate, { isChildren: true } ) + ']'
 			: 'null'
 
 		return `
@@ -61,7 +77,7 @@ class Compiler {
 
 	EachStatement( { sequence, item, body } ) {
 		const _sequence = this._render( sequence )
-		const _body = '[' + this._render( body, true ) + ']'
+		const _body = '[' + this._render( body, { isChildren: true } ) + ']'
 		const _item = item
 
 		return `
@@ -71,8 +87,13 @@ class Compiler {
 		`
 	}
 
-	Text( ast ) {
+	Text( ast, options ) {
 		const value = ast.value
+
+		if ( options.isAttribute ) {
+			return `'${ value }'`
+		}
+
 		return `
 			_h( '#text', {}, [], { value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )
 		`
@@ -80,18 +101,16 @@ class Compiler {
 
 	// --- expression ---
 
-	Expression( ast ) {
-		return compileExpression( this._source, ast.tokens, {
-			globals: ast.globals
-		} )
-	}
-
-	renderExpressionAsText( ast ) {
+	Expression( ast, options ) {
 		const compiled = compileExpression( this._source, ast.tokens, {
 			globals: ast.globals
 		} )
 
-		return `_h( '#text', {}, [], { value: ${ compiled } } )`
+		if ( options.isChildren ) {
+			return `_h( '#text', {}, [], { value: ${ compiled } } )`
+		}
+
+		return compiled
 	}
 }
 
