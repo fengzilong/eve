@@ -150,7 +150,7 @@ export default class TemplateParser {
 		let token
 		let str = ''
 
-		while ( ( token = this.accept( 'text' ) || this.accept( 'whitespace' ) ) ) { // tslint:disable-line
+		while ( ( token = this.accept( 'text' ) || this.accept( 'whitespace' ) ) ) {
 			str += token.value
 		}
 
