@@ -171,7 +171,7 @@ export default class TemplateParser {
 
 		const tagEndToken = this.expect( 'tagEnd' )
 
-		// ends with `/>` or matches self-closed tags defined in w3c
+		// ends with `/>` or matches w3c self-closed tags
 		if ( tagEndToken.value.isSelfClosed ) {
 			return node
 		}
