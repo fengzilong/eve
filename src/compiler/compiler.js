@@ -56,13 +56,14 @@ class Compiler {
 				isAttribute: true,
 				punctuation: '+'
 			} )
-			console.log( 'rendered', rendered );
 
 			_attrs += JSON.stringify( key ) + ':'
 			if ( key.indexOf( '@' ) !== 0 ) {
 				_attrs += rendered ? rendered : `""`
-			} else {
-				_attrs += rendered ? JSON.stringify( rendered ) : `""`
+			} else { // events
+				_attrs += rendered
+					? `function ( $e ) { return ( ${ rendered } ) }.bind( this )`
+					: `function () {}`
 			}
 
 			i++
@@ -102,7 +103,7 @@ class Compiler {
 		return `
 			_l( ${ _sequence }, function ( ${ _item }, ${ _item }_index ) {
 				return ${ _body }
-			} )
+			}.bind( this ) )
 		`
 	}
 
@@ -110,7 +111,7 @@ class Compiler {
 		const value = ast.value
 
 		if ( options.isAttribute ) {
-			return `'${ value }'`
+			return JSON.stringify( value )
 		}
 
 		return `

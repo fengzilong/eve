@@ -1,4 +1,5 @@
 export default {
+	'console': true,
 	'window': true,
 	'this': true,
 	'Math': true,

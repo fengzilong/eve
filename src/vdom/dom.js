@@ -36,9 +36,7 @@ function createNode( name, attrs ) {
 		if ( key.indexOf( '@' ) !== 0 ) {
 			node.setAttribute( key, attrs[ key ] )
 		} else {
-			node.addEventListener( key.slice( 1 ), e => {
-				console.log( key.slice( 1 ), 'triggered' )
-			} )
+			node.addEventListener( key.slice( 1 ), attrs[ key ] )
 		}
 	} )
 	return node

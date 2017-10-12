@@ -17,6 +17,9 @@ class Eve extends Emitter {
 		const empty = Object.create( null )
 		this.data = typeof this.data === 'function' ? this.data( empty ) : empty
 
+		// merge methods
+		Object.assign( this, this.constructor.proto( 'methods' ) )
+
 		// render function
 		this.$render = createRenderFn( this.template, this )
 
