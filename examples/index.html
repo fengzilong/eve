@@ -86,13 +86,14 @@
 
 				template:
 				`
-					<div class="clazz { abc }" disabled a>
+					<div class="clazz { abc }" style="margin-top: 100px;" disabled a>
 						{#each items as b}
 							---
 							<div @click="{ this.onClick($e, 'a', b) }">a</div>
 							{ b + 1 }
 							<div>b</div>
 							{ fullname }
+							<br />
 							---
 							<br />
 						{/each}

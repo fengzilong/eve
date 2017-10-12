@@ -41,21 +41,40 @@ class Compiler {
 	}
 
 	Tag( { name, attributes, children } ) {
+		name = JSON.stringify( name )
+
 		const _children = this._render( children, {
 			isChildren: true
 		} )
 
-		let _attrs = {}
+		const attributesLen = Object.keys( attributes ).length
+		let i = 0
+
+		let _attrs = '{'
 		for ( const key in attributes ) {
-			_attrs[ key ] = this._render( attributes[ key ], {
+			const rendered = this._render( attributes[ key ], {
 				isAttribute: true,
 				punctuation: '+'
 			} )
+			console.log( 'rendered', rendered );
+
+			_attrs += JSON.stringify( key ) + ':'
+			if ( key.indexOf( '@' ) !== 0 ) {
+				_attrs += rendered ? rendered : `""`
+			} else {
+				_attrs += rendered ? JSON.stringify( rendered ) : `""`
+			}
+
+			i++
+
+			if ( i < attributesLen ) {
+				_attrs += ','
+			}
 		}
-		_attrs = JSON.stringify( _attrs )
+		_attrs = _attrs + '}'
 
 		return `_h(
-			'${ name }',
+			${ name },
 			${ _attrs },
 			[].concat( ${ _children } )
 		)`

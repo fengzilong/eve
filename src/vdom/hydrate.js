@@ -49,7 +49,7 @@ function hydrate( node, vnode ) {
 }
 
 function patchAttrs( node, domprops, vnode, props ) {
-
+	
 }
 
 function patchEvents() {
