@@ -177,7 +177,7 @@ export default class TemplateParser {
 				const ast = parser.parse( this.source, {
 					startIndex: attrValue.value.start,
 					endIndex: attrValue.value.end,
-					globals: this.globals
+					globals: { $e: true, ...this.globals }
 				} )
 				node.attributes[ attrKey.value.value ] = ast
 			} else {

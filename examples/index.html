@@ -72,12 +72,9 @@
 						first: 'first',
 						last: 'last',
 
-						items: [1,2,{ true: { c: [1,2,3] } }],
+						items: [1,2,3],
 						a: 1,
 						b: false,
-						isString() {
-							return true
-						}
 					}
 				},
 				props: [ 'text', 'color' ],
@@ -86,6 +83,23 @@
 						return this.data.first + ' ' + this.data.last
 					}
 				},
+
+				template:
+				`
+					<div class="clazz { abc }" disabled a>
+						{#each items as b}
+							---
+							<div @click="{ this.onClick($e, 'a', b) }">a</div>
+							{ b + 1 }
+							<div>b</div>
+							{ fullname }
+							---
+							<br />
+						{/each}
+					</div>
+				`
+				,
+
 				methods: {
 					isString( v ) {
 						return typeof v === 'string'
@@ -99,20 +113,6 @@
 						console.log( 'entered' );
 					}
 				},
-				template:
-				`
-					<div class="clazz { abc }" disabled a>
-						{#each items as b}
-							---
-							<div @click="{ onClick($e, 'a', b) }">a</div>
-							{ b + 1 }
-							<div>b</div>
-							---
-							<br />
-						{/each}
-					</div>
-				`
-				,
 
 				// 实例被创建
 				created() {
