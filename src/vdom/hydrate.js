@@ -29,7 +29,7 @@ function hydrate( node, vnode ) {
 	let childNode = node.firstChild
 	let childVNode = vnode.children[ i ]
 
-	while( childNode || childVNode ) {
+	while ( childNode || childVNode ) {
 		if ( !childNode ) { // real dom is missing
 			node.appendChild(
 				createNodeFromVNode( childVNode )
