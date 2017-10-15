@@ -10,18 +10,16 @@ export default Eve
 class Eve extends Emitter {
 	// --- constructor ---
 
-	constructor() {
+	constructor( { data = {} } = {} ) {
 		super()
 
 		// init data
 		const empty = Object.create( null )
 		this.data = typeof this.data === 'function' ? this.data( empty ) : empty
+		Object.assign( this.data, data )
 
-		// merge methods
+		// merge methods, make methods extendable
 		Object.assign( this, this.constructor.proto( 'methods' ) )
-
-		// render function
-		this.$render = createRenderFn( this.template, this )
 
 		// watch data changes
 		const watcher = new Watcher( { context: this, path: 'data' } )

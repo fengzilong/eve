@@ -217,6 +217,8 @@ export default class ExpressionCompiler {
 			] )
 			this.insertAfter( index, [
 				new Token( 'symbol', `'`, { frame: `'` } ),
+				new Token( 'symbol', `,`, { frame: `,` } ),
+				new Token( 'ident', `this`, { frame: `this` } ),
 				new Token( 'symbol', ')', { frame: ')' } )
 			] )
 		}

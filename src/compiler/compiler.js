@@ -16,8 +16,6 @@ class Compiler {
 
 		const ast = this._parser.parse( source )
 
-		console.log( 'ast', ast )
-
 		if ( ast.length > 1 ) {
 			console.error( source )
 			throw new Error( `Expect one root element in template` )
@@ -47,37 +45,48 @@ class Compiler {
 			isChildren: true
 		} )
 
-		const attributesLen = Object.keys( attributes ).length
-		let i = 0
-
 		let _attrs = '{'
+		let _events = '{'
+
 		for ( const key in attributes ) {
 			const rendered = this._render( attributes[ key ], {
 				isAttribute: true,
 				punctuation: '+'
 			} )
 
-			_attrs += JSON.stringify( key ) + ':'
-			if ( key.indexOf( '@' ) !== 0 ) {
+			if ( key.indexOf( '@' ) !== 0 ) { // attrs
+				_attrs += JSON.stringify( key ) + ':'
 				_attrs += rendered ? rendered : `""`
+				_attrs += ','
 			} else { // events
-				_attrs += rendered
+				_events += JSON.stringify( key.slice( 1 ) ) + ':'
+				_events += rendered
 					? `function ( $e ) { return ( ${ rendered } ) }.bind( this )`
 					: `function () {}`
-			}
-
-			i++
-
-			if ( i < attributesLen ) {
-				_attrs += ','
+				_events += ','
 			}
 		}
-		_attrs = _attrs + '}'
+
+		// remove trailing comma
+		_attrs = _attrs.replace( /,$/, '' )
+		_events = _events.replace( /,$/, '' )
+
+		_attrs += '}'
+		_events += '}'
 
 		return `_h(
 			${ name },
 			${ _attrs },
-			[].concat( ${ _children } )
+			[].concat( ${ _children } ),
+			{
+				events: ${ _events },
+				meta: {
+					instance: this,
+					isComponent: ( ${ name } in components ),
+					components: components,
+					ctor: components[ ${ name } ]
+				}
+			}
 		)`
 	}
 
@@ -115,7 +124,7 @@ class Compiler {
 		}
 
 		return `
-			_h( '#text', {}, [], { value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )
+			_h( '#text', {}, [], { meta: {}, value: '${ value.replace( /\n/g, '\\n' ).replace( /\r/g, '\\r' ) }' } )
 		`
 	}
 
@@ -127,7 +136,7 @@ class Compiler {
 		} )
 
 		if ( options.isChildren ) {
-			return `_h( '#text', {}, [], { value: ${ compiled } } )`
+			return `_h( '#text', {}, [], { meta: {}, value: ${ compiled } } )`
 		}
 
 		return compiled

@@ -1,4 +1,7 @@
-import { createDOMNode } from './dom'
+import { createNodeFromVNode } from './dom'
+import patchAttrs from './patchAttrs'
+import connect from './connect'
+import createComponent from './createComponent'
 
 export default hydrate
 
@@ -15,6 +18,9 @@ function hydrate( node, vnode ) {
 
 	patchAttrs( node, attrs, vnode, vnode.attrs )
 
+	// events
+	patchEvents()
+
 	// children
 	let i = 0
 	let childNode = node.firstChild
@@ -22,22 +28,38 @@ function hydrate( node, vnode ) {
 
 	while( childNode || childVNode ) {
 		if ( !childNode ) { // real dom is missing
-			node.appendChild( createDOMNode( childVNode ) )
+			node.appendChild(
+				createNodeFromVNode( childVNode )
+			)
+			console.log( '[hydrate] append' )
 		} else {
 			const nextSibling = childNode.nextSibling
 
 			if ( !childVNode ) { // real dom is unnecessary
 				node.removeChild( childNode )
+				console.log( '[hydrate] remove' )
 			} else { // compare two nodes
 				const childNodeName = childNode.nodeName.toLowerCase()
 				const childVNodeName = childVNode.name
+				const ctor = childVNode.meta.ctor
 
-				if ( childNodeName !== childVNodeName ) { // replace
-					node.replaceChild( createDOMNode( childVNode ), childNode )
-				} else if ( childNodeName === '#text' ) { // update text content
-					childNode.textContent = childVNode.value
-				} else { // hydrate again
-					hydrate( childNode, childVNode )
+				if ( ctor ) { // build as component
+					createComponent( childNode, childVNode.attrs, ctor )
+				} else {
+					if ( childNodeName !== childVNodeName ) { // replace
+						node.replaceChild(
+							createNodeFromVNode( childVNode ),
+							childNode
+						)
+						console.log( '[hydrate] replace', childNode )
+					} else if ( childNodeName === '#text' ) { // update text content
+						if ( childNode.textContent !== childVNode.value ) {
+							childNode.textContent = childVNode.value
+							console.log( '[hydrate] update text', childNode );
+						}
+					} else { // hydrate again
+						hydrate( childNode, childVNode )
+					}
 				}
 			}
 
@@ -46,10 +68,9 @@ function hydrate( node, vnode ) {
 
 		childVNode = vnode.children[ ++i ]
 	}
-}
 
-function patchAttrs( node, domprops, vnode, props ) {
-	
+	// connect, events will use vnode.events
+	connect( node, vnode )
 }
 
 function patchEvents() {

@@ -43,6 +43,8 @@ function createExtend( staticProps: Object ): Function {
 		Child.implement( definition )
 		// chain parent
 		Child.parent = parent
+		// make definition available
+		Child.definition = definition
 
 		return Child
 	}

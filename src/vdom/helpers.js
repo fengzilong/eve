@@ -7,8 +7,8 @@ function h( name, attrs = {}, children = [], extra = {} ) {
 }
 
 // should be bound before passing to render function
-function g( name ) {
-	return this.$get( name )
+function g( name, context = this ) {
+	return context.$get( name )
 }
 
 function l( sequence = [], callback ) {
@@ -27,8 +27,9 @@ function l( sequence = [], callback ) {
 }
 
 function o( vnode ) {
-	console.log( 'Optimizing vnode', vnode )
-	return optimize( vnode )
+	const optimized = optimize( vnode )
+	console.log( 'optimized vnode', optimized )
+	return optimized
 }
 
 // merge sibling text into one
@@ -39,14 +40,11 @@ function optimize( vnode ) {
 
 	let texts = []
 	children.forEach( child => {
-		if ( child.type === '#text' ) {
+		if ( child.name === '#text' ) {
 			texts.push( child )
 		} else {
 			if ( texts.length > 0 ) {
-				newChildren.push( h( '#text', {}, [], {
-					value: texts.map( text => text.value ).join( '' )
-				} ) )
-				texts = []
+				mergeTexts( texts, newChildren )
 			}
 
 			optimize( child )
@@ -55,7 +53,20 @@ function optimize( vnode ) {
 		}
 	} )
 
+	// sometimes texts are at the end in children
+	if ( texts.length > 0 ) {
+		mergeTexts( texts, newChildren )
+	}
+
 	vnode.children = newChildren
 
 	return vnode
+}
+
+function mergeTexts( texts, parent ) {
+	parent.push( h( '#text', {}, [], {
+		meta: {},
+		value: texts.map( text => text.value ).join( '' )
+	} ) )
+	texts.length = 0
 }

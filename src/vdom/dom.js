@@ -1,8 +1,15 @@
+import { isSVGTag } from '../utils/is'
+import patchAttrs from './patchAttrs'
+import connect from './connect'
+import createComponent from './createComponent'
+
 export {
-	createDOMNode,
+	createNodeFromVNode
 }
 
-function createDOMNode( vnode ) {
+// ---
+
+function createNodeFromVNode( vnode ) {
 	if ( !vnode ) {
 		return
 	}
@@ -13,14 +20,58 @@ function createDOMNode( vnode ) {
 		return createTextNode( vnode.value )
 	}
 
-	const node = createNode( vnodeName, vnode.attrs )
+	const ctor = vnode.meta.ctor
+	if ( !ctor ) {
+		const node = createNode( vnodeName )
 
-	vnode.children.forEach( child => {
-		const childNode = createDOMNode( child )
-		node.append( childNode )
+		// connect
+		connect( node, vnode )
+
+		patchAttrs( node, {}, vnode, vnode.attrs )
+
+		// proxy events, using handlers in vnode.events
+		Object.keys( vnode.events || {} )
+		.forEach( eventName => addEvent( node, eventName ) )
+
+		vnode.children.forEach( child => {
+			const childNode = createNodeFromVNode( child )
+			node.appendChild( childNode )
+		} )
+
+		return node
+	} else {
+		const attrs = vnode.attrs || {}
+		const root = document.createElement( 'div' )
+
+		const fragment = document.createDocumentFragment()
+		fragment.appendChild( root )
+
+		createComponent( root, attrs, ctor )
+
+		return fragment
+	}
+}
+
+function addEvent( node, eventName ) {
+	const vnode = node.__vnode__
+
+	node.addEventListener( eventName, e => {
+		// avoid reference being replaced
+		const vnode = node.__vnode__
+		const instance = vnode.meta.instance
+		const events = vnode.events || {}
+		let fns = events[ eventName ]
+
+		// normalize
+		if ( typeof fns === 'function' ) {
+			return fns.call( instance, e )
+		}
+
+		for ( let i = 0, len = fns.length; i < len; i++ ) {
+			const fn = fns[ i ]
+			fn.call( instance, e )
+		}
 	} )
-
-	return node
 }
 
 // ---
@@ -29,15 +80,11 @@ function createTextNode( content ) {
 	return document.createTextNode( content )
 }
 
-// TODO: svg
-function createNode( name, attrs ) {
-	const node = document.createElement( name )
-	Object.keys( attrs ).forEach( key => {
-		if ( key.indexOf( '@' ) !== 0 ) {
-			node.setAttribute( key, attrs[ key ] )
-		} else {
-			node.addEventListener( key.slice( 1 ), attrs[ key ] )
-		}
-	} )
-	return node
+// TODO: move isSVG to compiler
+function createNode( name ) {
+	if ( !isSVGTag( name ) ) {
+		return document.createElement( name )
+	}
+
+	return document.createElementNS( 'http://www.w3.org/2000/svg', name )
 }

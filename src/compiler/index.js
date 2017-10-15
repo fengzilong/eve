@@ -7,6 +7,12 @@ export default function ( source ) {
 	console.log( renderFnString );
 	return {
 		dependencies: [],
-		render: new Function ( '_h', '_g', '_l', '_o', 'return _o( ' + renderFnString + ' )' )
+		render: new Function (
+			'_h', '_g', '_l', '_o',
+			`
+				var components = this.constructor.proto( 'components' );
+				return _o( ${ renderFnString } )
+			`
+		)
 	}
 }

@@ -7,6 +7,9 @@
 	<body>
 		<div id="app"></div>
 
+		<script type="text/javascript">
+			const startTime = Date.now()
+		</script>
 		<script type="text/javascript" src="../dist/eve.js"></script>
 		<script type="text/javascript">
 			`
@@ -52,7 +55,7 @@
 
 			const Button = Eve.extend( {
 				template: `
-					<button>{ text }</button>
+					<button @click="{ this.onClick() }">{ text }</button>
 				`,
 
 				data() {
@@ -60,6 +63,12 @@
 						text: '按钮文字'
 					}
 				},
+
+				methods: {
+					onClick() {
+						console.log( 'clicked' )
+					}
+				}
 			} )
 
 			const App = Eve.extend( {
@@ -69,6 +78,7 @@
 
 				data() {
 					return {
+						abc: 'class-abc',
 						first: 'first',
 						last: 'last',
 
@@ -77,7 +87,6 @@
 						b: false,
 					}
 				},
-				props: [ 'text', 'color' ],
 				computed: {
 					fullname() {
 						return this.data.first + ' ' + this.data.last
@@ -87,12 +96,14 @@
 				template:
 				`
 					<div class="clazz { abc }" style="margin-top: 100px;" disabled a>
+						<Button text="123"></Button>
+
 						{#each items as b}
 							---
 							<div @click="{ console.log( this ),this.onClick($e, 'a', b) }">a</div>
 							{ b + 1 }
-							<div>b</div>
-							{ fullname }
+							<div>{ this.postfix( b, 'haha' ) + '~' }</div>
+							{ this.postfix( fullname, ' en?' ) }
 							<br />
 							---
 							<br />
@@ -110,6 +121,10 @@
 				methods: {
 					isString( v ) {
 						return typeof v === 'string'
+					},
+
+					postfix( value, v ) {
+						return value + v
 					},
 
 					onClick( e, v1, v2 ) {
@@ -141,6 +156,16 @@
 
 					this.data.first = 'first2'
 					this.data.last = 'last2'
+
+					setTimeout( () => {
+						this.data.first = 'first3'
+						this.$update()
+					}, 1000);
+
+					setTimeout( () => {
+						this.data.items = [ 6, 7, 8 ]
+						this.$update()
+					}, 2000);
 				},
 
 				// 被挂载到dom中
