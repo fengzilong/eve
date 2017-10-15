@@ -1,7 +1,6 @@
 import Watcher from './core/Watcher'
 import Emitter from './core/Emitter'
 import callHook from './core/callHook'
-import createRenderFn from './core/createRenderFn'
 
 export default Eve
 
@@ -12,6 +11,9 @@ class Eve extends Emitter {
 
 	constructor( { data = {} } = {} ) {
 		super()
+
+		// $refs
+		this.$refs = {}
 
 		// init data
 		const empty = Object.create( null )

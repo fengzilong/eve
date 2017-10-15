@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>demo</title>
+	</head>
+	<body>
+		<div id="app"></div>
+
+		<script type="text/javascript">
+			const startTime = Date.now()
+		</script>
+		<script type="text/javascript" src="../../dist/eve.js"></script>
+		<script type="text/javascript">
+			const App = Eve.extend( {
+				template: `
+					<div>
+						<div>
+							<input ref="input" @input="{ this.onChange( $e ) }" />
+							<button @click="{ this.onAdd(  ) }">Add</button>
+						</div>
+
+						<div class="todos">
+							{#each todos as todo}
+							<div class="todo">
+								{ todo }
+								<button @click="{ this.onDelete( todo_index ) }">x</button>
+							</div>
+							{/each}
+						</div>
+
+						<div>
+							{ tick }
+						</div>
+					</div>
+				`,
+
+				data() {
+					return {
+						todos: [],
+						tick: 0
+					}
+				},
+
+				methods: {
+					onChange( e ) {
+						const value = e.target.value
+						console.log( 'changed', value );
+						this._value = value
+					},
+
+					onAdd() {
+						this.data.todos.push( this._value )
+						this.$update()
+						this.$refs.input.value = ''
+						this.$refs.input.focus()
+					},
+
+					onDelete( index ) {
+						this.data.todos.splice( index, 1 )
+						this.$update()
+					}
+				},
+
+				created() {
+					setInterval( () => {
+						this.data.tick++
+						this.$update()
+					}, 1000 )
+				},
+
+				disposed() {
+					// todo
+				}
+			} )
+
+			new App().$mount( '#app' )
+
+			console.log( Date.now() - startTime )
+		</script>
+	</body>
+</html>
