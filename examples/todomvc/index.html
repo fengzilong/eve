@@ -12,20 +12,37 @@
 		</script>
 		<script type="text/javascript" src="../../dist/eve.js"></script>
 		<script type="text/javascript">
+			const Todo = Eve.extend( {
+				template: `
+					<div class="todo">
+						{ value }
+						<button @click="{ this.onDelete() }">x</button>
+					</div>
+				`,
+
+				methods: {
+					onDelete( index ) {
+						this.$emit( 'delete' )
+					}
+				}
+			} )
+
 			const App = Eve.extend( {
+				components: {
+					Todo,
+				},
+
 				template: `
 					<div>
 						<div>
 							<input ref="input" @input="{ this.onChange( $e ) }" />
-							<button @click="{ this.onAdd(  ) }">Add</button>
+							<button @click="{ this.onAdd() }">Add</button>
 						</div>
 
 						<div class="todos">
+							{ this.json( todos ) }
 							{#each todos as todo}
-							<div class="todo">
-								{ todo }
-								<button @click="{ this.onDelete( todo_index ) }">x</button>
-							</div>
+								<Todo value="{ todo }" @delete="{ this.onDelete( todo_index ) }"></Todo>
 							{/each}
 						</div>
 
@@ -43,6 +60,9 @@
 				},
 
 				methods: {
+					json( v ) {
+						return JSON.stringify( v )
+					},
 					onChange( e ) {
 						const value = e.target.value
 						console.log( 'changed', value );

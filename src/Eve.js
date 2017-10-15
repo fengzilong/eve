@@ -1,16 +1,16 @@
 import Watcher from './core/Watcher'
-import Emitter from './core/Emitter'
+import { emitable } from './core/Emitter'
 import callHook from './core/callHook'
 
 export default Eve
 
 // ---
 
-class Eve extends Emitter {
+class Eve {
 	// --- constructor ---
 
 	constructor( { data = {} } = {} ) {
-		super()
+		emitable( this )
 
 		// $refs
 		this.$refs = {}

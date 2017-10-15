@@ -27,6 +27,7 @@ function createMethods() {
 	}
 
 	return {
+		'_(:з」∠)_': all, // for debug
 		$on( type: string, fn: Function, options: { once: boolean } = { once: false } ) {
 			const array = list( type )
 

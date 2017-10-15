@@ -31,7 +31,7 @@ function createNodeFromVNode( vnode ) {
 
 		// proxy events, using handlers in vnode.events
 		Object.keys( vnode.events || {} )
-		.forEach( eventName => addEvent( node, eventName ) )
+			.forEach( eventName => addEvent( node, eventName ) )
 
 		vnode.children.forEach( child => {
 			const childNode = createNodeFromVNode( child )
@@ -40,29 +40,25 @@ function createNodeFromVNode( vnode ) {
 
 		return node
 	} else {
-		const attrs = vnode.attrs || {}
-		const root = document.createElement( 'div' )
-
 		const fragment = document.createDocumentFragment()
+		const root = document.createElement( 'div' )
 		fragment.appendChild( root )
 
-		createComponent( root, attrs, ctor )
+		createComponent( root, vnode, ctor )
 
 		return fragment
 	}
 }
 
 function addEvent( node, eventName ) {
-	const vnode = node.__vnode__
-
 	node.addEventListener( eventName, e => {
 		// avoid reference being replaced
 		const vnode = node.__vnode__
-		const instance = vnode.meta.instance
 		const events = vnode.events || {}
 		let fns = events[ eventName ]
 
-		// normalize
+		const instance = vnode.meta.instance
+
 		if ( typeof fns === 'function' ) {
 			return fns.call( instance, e )
 		}

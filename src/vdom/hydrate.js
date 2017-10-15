@@ -9,6 +9,9 @@ export default hydrate
 
 // hydrate should applied when node and vnode has the same name
 function hydrate( node, vnode ) {
+	// connect, events will use vnode.events
+	connect( node, vnode )
+
 	// attrs
 	const attrs = [];
 
@@ -44,7 +47,20 @@ function hydrate( node, vnode ) {
 				const ctor = childVNode.meta.ctor
 
 				if ( ctor ) { // build as component
-					createComponent( childNode, childVNode.attrs, ctor )
+					const instance = (
+						childNode.__vnode__ &&
+						childNode.__vnode__.meta &&
+						childNode.__vnode__.meta.instance
+					)
+
+					if ( instance && instance instanceof ctor ) {
+						console.log( '[[hydrate]] reuse instance:', childVNodeName );
+						Object.assign( instance.data, childVNode.attrs )
+						childNode.__vnode__.meta.instance.$update()
+					} else {
+						console.log( '[hydrate] create instance:', childVNodeName );
+						createComponent( childNode, childVNode, ctor )
+					}
 				} else {
 					if ( childNodeName !== childVNodeName ) { // replace
 						node.replaceChild(
@@ -68,9 +84,6 @@ function hydrate( node, vnode ) {
 
 		childVNode = vnode.children[ ++i ]
 	}
-
-	// connect, events will use vnode.events
-	connect( node, vnode )
 }
 
 function patchEvents() {
