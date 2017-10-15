@@ -11,7 +11,6 @@ function createComponent( node, vnode = {}, ctor ) {
 	} )
 
 	for ( const eventName in events ) {
-		console.log( 'bind event', eventName );
 		instance.$on( eventName, e => {
 			let fns = events[ eventName ]
 

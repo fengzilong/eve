@@ -38,6 +38,7 @@
     "bili": "^0.17.7",
     "deep-equal": "^1.0.1",
     "dot-prop": "^4.2.0",
+    "eslint": "^4.9.0",
     "eslint-plugin-flowtype": "^2.35.0",
     "husky": "^0.13.1",
     "jest": "^20.0.4",

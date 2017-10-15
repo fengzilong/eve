@@ -1,5 +1,5 @@
-import { Parser as TemplateParser } from './template'
-import ExpressionCompiler from './expression'
+import { Parser as TemplateParser } from './template/index'
+import ExpressionCompiler from './expression/index'
 
 export default Compiler
 
@@ -139,7 +139,7 @@ class Compiler {
 			return `_h( '#text', {}, [], { meta: {}, value: ${ compiled } } )`
 		}
 
-		return compiled
+		return `( ${ compiled } )`
 	}
 }
 

@@ -16,7 +16,6 @@ function l( sequence = [], callback ) {
 
 	let i = 0
 	for ( let v of sequence ) {
-		console.log( 'Looping', v, i );
 		for ( let v2 of callback( v, i ) ) {
 			tmp.push( v2 )
 		}
@@ -39,6 +38,10 @@ function optimize( vnode ) {
 
 	let texts = []
 	children.forEach( child => {
+		if ( !child ) {
+			return
+		}
+
 		if ( child.name === '#text' ) {
 			texts.push( child )
 		} else {

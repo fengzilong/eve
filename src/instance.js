@@ -2,7 +2,7 @@ import callHook from './core/callHook'
 import warning from './utils/warning'
 import { createNodeFromVNode } from './vdom/dom'
 import hydrate from './vdom/hydrate'
-import compile from './compiler'
+import compile from './compiler/index'
 import { h, g, l, o } from './vdom/helpers'
 
 const instance = {

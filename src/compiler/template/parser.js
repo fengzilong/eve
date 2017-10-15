@@ -4,7 +4,7 @@ import ParserError from '../shared/error/ParserError'
 import getCodeFrame from '../shared/getCodeFrame'
 import isSelfClosedTag from './utils/isSelfClosedTag'
 import Lexer from './lexer'
-import nodes from './nodeTypes'
+import nodes from './nodeTypes/index'
 
 // ---
 

@@ -67,11 +67,11 @@ function hydrate( node, vnode ) {
 							createNodeFromVNode( childVNode ),
 							childNode
 						)
-						console.log( '[hydrate] replace', childNode )
+						console.log( '[hydrate] replace' )
 					} else if ( childNodeName === '#text' ) { // update text content
 						if ( childNode.textContent !== childVNode.value ) {
 							childNode.textContent = childVNode.value
-							console.log( '[hydrate] update text', childNode );
+							console.log( '[hydrate] update text' );
 						}
 					} else { // hydrate again
 						hydrate( childNode, childVNode )

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>todomvc</title>
+		<link rel="stylesheet" href="https://unpkg.com/todomvc-common/base.css">
+		<link rel="stylesheet" href="https://unpkg.com/todomvc-app-css/index.css">
+	</head>
+	<body>
+		<div id="app"></div>
+
+		<script type="text/javascript">
+			const startTime = Date.now()
+		</script>
+		<script type="text/javascript" src="../dist/eve.js"></script>
+		<script type="text/javascript">
+			const Todo = Eve.extend( {
+				template: `
+					<li
+						class="{ todo.done ? 'completed' : '' } { editing ? 'editing' : '' }"
+						@dblclick="{ this.onEdit() }"
+					>
+						<div class="view">
+							<input
+								class="toggle"
+								type="checkbox"
+								@click="{ this.onToggle( todo ) }"
+								checked="{ todo.done }"
+							/>
+							<label>
+								{ todo.text }
+							</label>
+							<button class="destroy" @click="{ this.onDelete( todo ) }"></button>
+						</div>
+						{#if editing}
+							<input
+								class="edit"
+								value="{ todo.text }"
+								@blur="{ this.onBlur( $e ) }"
+								@keyup="{ this.onKeyup( $e ) }"
+							/>
+						{/if}
+					</li>
+				`,
+
+				data() {
+					return {
+						editing: false
+					}
+				},
+
+				methods: {
+					json( v ) {
+						return JSON.stringify( v )
+					},
+
+					onEdit() {
+						this.data.editing = true
+						this.$update()
+					},
+
+					onKeyup( e ) {
+						if ( e.which === 13 ) {
+							e.target.blur()
+						}
+					},
+
+					onBlur( e ) {
+						this.data.editing = false
+						this.$update()
+
+						this.$emit( 'change', e.target.value )
+					},
+
+					onDelete( todo ) {
+						this.$emit( 'delete', todo )
+					},
+
+					onToggle() {
+						this.data.todo.done = !this.data.todo.done
+						this.$update()
+					}
+				}
+			} )
+
+			const App = Eve.extend( {
+				components: {
+					Todo,
+				},
+
+				template: `
+					<section class="todoapp">
+						<header class="header">
+							<h1>todos</h1>
+							<input ref="input" class="new-todo" placeholder="What needs to be done?" autofocus @keyup="{ this.onKeyup( $e ) }" />
+						</header>
+						<section class="main">
+							{#if todos.length > 0}
+							<input id="toggle-all" class="toggle-all" type="checkbox" @click="{ this.onToggleAll() }" />
+							<label for="toggle-all">Mark all as complete</label>
+							{/if}
+							<ul class="todo-list">
+								{#each filteredTodos as todo}
+									<Todo
+										todo="{ todo }"
+										@change="{ this.onTodoChange( todo, $e ) }"
+										@delete="{ this.onTodoDelete( $e ) }"
+									></Todo>
+								{/each}
+							</ul>
+						</section>
+						{#if todos.length > 0}
+						<footer class="footer">
+							<span class="todo-count"><strong>{ leftCount }</strong> item left</span>
+							<ul class="filters">
+								<li>
+									<a href="javascript:;" class="{ filter === 'all' ? 'selected' : '' }" @click="{ this.onFilter( 'all' ) }">All</a>
+								</li>
+								<li>
+									<a href="javascript:;" class="{ filter === 'active' ? 'selected' : '' }"  @click="{ this.onFilter( 'active' ) }">Active</a>
+								</li>
+								<li>
+									<a href="javascript:;" class="{ filter === 'completed' ? 'selected' : '' }"  @click="{ this.onFilter( 'completed' ) }">Completed</a>
+								</li>
+							</ul>
+							<button class="clear-completed" @click="{ this.clearCompleted() }">Clear completed</button>
+						</footer>
+						{/if}
+					</section>
+				`,
+
+				data() {
+					return {
+						todos: [],
+						filter: 'all',
+						filteredTodos: []
+					}
+				},
+
+				computed: {
+					leftCount() {
+						return this.data.filteredTodos.filter( todo => !todo.done ).length
+					}
+				},
+
+				methods: {
+					json( v ) {
+						return JSON.stringify( v )
+					},
+
+					onTodoChange( todo, text ) {
+						todo.text = text
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+					},
+
+					onTodoDelete( todo ) {
+						let index
+
+						this.data.todos.forEach( ( v, i ) => {
+							if ( v === todo ) {
+								index = i
+							}
+						} )
+
+						this.data.todos.splice( index, 1 )
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+					},
+
+					onKeyup( e ) {
+						if ( e.which === 13 ) {
+							this.doAdd( e.target.value )
+						}
+					},
+
+					onAdd() {
+						this.doAdd( this._value )
+					},
+
+					doAdd( text ) {
+						this.data.todos.push( {
+							text: text,
+							done: false
+						} )
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+
+						this.$refs.input.value = ''
+						this.$refs.input.focus()
+					},
+
+					onToggleAll() {
+						const hasUndo = this.data.todos.some( todo => !todo.done )
+						this.data.todos.forEach( todo => todo.done = hasUndo )
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+					},
+
+					onDelete( index ) {
+						this.data.todos.splice( index, 1 )
+						this.$update()
+					},
+
+					onFilter( filterName ) {
+						this.data.filter = filterName
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+					},
+
+					clearCompleted() {
+						this.data.todos = this.data.todos.filter( todo => !todo.done )
+						this.data.filteredTodos = doFilter( this.data.todos, this.data.filter )
+						this.$update()
+					}
+				},
+
+				created() {
+					this.$watch( 'leftCount', () => {} )
+				},
+
+				disposed() {
+					// todo
+				}
+			} )
+
+			new App().$mount( '#app' )
+
+			function doFilter( todos, filter ) {
+				switch( filter ) {
+					case 'all':
+						return todos;
+					case 'active':
+						return todos.filter( todo => !todo.done );
+					case 'completed':
+						return todos.filter( todo => todo.done );
+				}
+			}
+
+			console.log( Date.now() - startTime )
+		</script>
+	</body>
+</html>
