@@ -28,7 +28,6 @@ function l( sequence = [], callback ) {
 
 function o( vnode ) {
 	const optimized = optimize( vnode )
-	console.log( 'optimized vnode', optimized )
 	return optimized
 }
 

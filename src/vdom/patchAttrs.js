@@ -14,8 +14,6 @@ function patchAttrs( node, attrs, vnode, props ) {
 	for ( const name in props ) {
 		const prop = props[ name ]
 
-		console.log( '::patchAttr', name, prop );
-
 		if ( name !== 'ref' ) {
 			node.setAttribute( name, prop )
 		} else {

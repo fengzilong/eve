@@ -8,7 +8,6 @@ import { h, g, l, o } from './vdom/helpers'
 const instance = {
 	$patch() {
 		const vdom = this.$render()
-		console.log( 'patch::new vdom::', vdom )
 		hydrate( this.$root, vdom )
 	},
 
@@ -42,7 +41,7 @@ const instance = {
 		// watch update event after first time $update
 		// TODO: filter updated properties, if not in dependencies, ignore
 		this._watcher.$on( 'update', () => {
-			console.log( this.$patch() )
+			this.$patch()
 		} )
 
 		callHook( this, 'attached' )
