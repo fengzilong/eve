@@ -6,7 +6,7 @@
 
 wip...
 
-## TodoMVC example written with eve
+## TodoMVC example
 
 https://fengzilong.github.io/eve-todomvc/
 
